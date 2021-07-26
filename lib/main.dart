@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:cheers_camera/screens/camera_screen.dart';
 import 'package:flutter/material.dart';
 
 List<CameraDescription> cameras = [];
@@ -19,8 +20,8 @@ class CheersCamera extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: "demo",
-      home: Text("Hello World!"),
+      title: "CheersCamera",
+      home: CameraScreen(),
     );
   }
 }
