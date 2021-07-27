@@ -21,11 +21,74 @@ class _CameraScreenState extends State<CameraScreen>
   File? _imageFile;
 
   bool _isCameraInitialized = false;
+  double _minAvailableExposureOffset = 0.0;
+  double _maxAvailableExposureOffset = 0.0;
+  double _minAvailableZoom = 1.0;
+  double _maxAvailableZoom = 1.0;
+
+  ResolutionPreset currentResolutionPreset = ResolutionPreset.max;
+
+  double _currentZoomLevel = 1.0;
+  double _currentExposureOffset = 0.0;
+  FlashMode? _currentFlashMode;
+
+  void onNewCameraSelected(CameraDescription cameraDescription) async {
+    final previousCameraController = controller;
+
+    final CameraController cameraController = CameraController(
+      cameraDescription,
+      currentResolutionPreset,
+      imageFormatGroup: ImageFormatGroup.jpeg
+    );
+
+    await previousCameraController?.dispose();
+
+    resetCameraValues();
+
+    if (mounted) {
+      setState(() {
+        controller = cameraController;
+      });
+    }
+
+    // 当controller更新好了UI也要跟着刷新
+    cameraController.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+
+    try {
+      await cameraController.initialize();
+      await Future.wait([
+        cameraController.getMinExposureOffset().then((value) => _minAvailableExposureOffset = value),
+        cameraController.getMaxExposureOffset().then((value) => _maxAvailableExposureOffset = value),
+        cameraController.getMaxZoomLevel().then((value) => _maxAvailableZoom = value),
+        cameraController.getMinZoomLevel().then((value) => _minAvailableZoom = value)
+      ]);
+
+      _currentFlashMode = controller!.value.flashMode;
+    } on CameraException catch (e) {
+      debugPrint("Error initializing camera: $e");
+    }
+
+    if (mounted) {
+      setState(() {
+        _isCameraInitialized = controller!.value.isInitialized;
+      });
+    }
+  }
+
+  void resetCameraValues() async {
+    _currentZoomLevel = 1.0;
+    _currentExposureOffset = 0.0;
+  }
 
   @override
   void initState() {
     // 隐藏状态栏
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    onNewCameraSelected(cameras.first);
     super.initState();
   }
 
@@ -39,7 +102,7 @@ class _CameraScreenState extends State<CameraScreen>
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.white,
           body: _isCameraInitialized
             ? const Text("true")
             : const Text("false"),
