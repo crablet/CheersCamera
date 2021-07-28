@@ -120,6 +120,21 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = controller;
+    // 还没初始化好之前就有APP状态变化（切前后台等）就直接退出函数，不进行后续处理
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {  // 不可见状态
+      cameraController.dispose();
+    } else if (state == AppLifecycleState.resumed) {  // 可见状态
+      onNewCameraSelected(cameraController.description);
+    }
+  }
+
+  @override
   void dispose() {
     controller?.dispose();
     super.dispose();
