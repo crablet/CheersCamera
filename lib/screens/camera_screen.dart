@@ -144,11 +144,20 @@ class _CameraScreenState extends State<CameraScreen>
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.black,
           body: _isCameraInitialized
             ? const Text("true")
-            : const Text("false"),
+            : _buildLoadingCamera(),
         )
+    );
+  }
+
+  Widget _buildLoadingCamera() {
+    return const Center(
+      child: Text(
+        "LOADING",
+        style: TextStyle(color: Colors.white),
+      ),
     );
   }
 }
