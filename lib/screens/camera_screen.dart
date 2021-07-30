@@ -207,43 +207,8 @@ class _CameraScreenState extends State<CameraScreen>
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0, top: 16.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            _currentExposureOffset.toStringAsFixed(1) + 'x',
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: RotatedBox(
-                        quarterTurns: 3,
-                        child: SizedBox(
-                          height: 30,
-                          child: Slider(
-                            value: _currentExposureOffset,
-                            min: _minAvailableExposureOffset,
-                            max: _maxAvailableExposureOffset,
-                            activeColor: Colors.white,
-                            inactiveColor: Colors.white30,
-                            onChanged: (value) async {
-                              setState(() {
-                                _currentExposureOffset = value;
-                              });
-                              await controller!.setExposureOffset(value);
-                            },
-                          ),
-                        ),
-                      )
-                    ),
+                    _buildShowExposureOffsetWidget(),
+                    _buildChangeExposureOffsetWidget(),
                     Row(
                       children: [
                         Expanded(
@@ -307,6 +272,49 @@ class _CameraScreenState extends State<CameraScreen>
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildChangeExposureOffsetWidget() {
+    return Expanded(
+      child: RotatedBox(
+        quarterTurns: 3,
+        child: SizedBox(
+          height: 30,
+          child: Slider(
+            value: _currentExposureOffset,
+            min: _minAvailableExposureOffset,
+            max: _maxAvailableExposureOffset,
+            activeColor: Colors.white,
+            inactiveColor: Colors.white30,
+            onChanged: (value) async {
+              setState(() {
+                _currentExposureOffset = value;
+              });
+              await controller!.setExposureOffset(value);
+            },
+          ),
+        ),
+      )
+    );
+  }
+
+  Widget _buildShowExposureOffsetWidget() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0, top: 16.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            _currentExposureOffset.toStringAsFixed(1) + 'x',
+            style: const TextStyle(color: Colors.black),
+          ),
+        ),
+      ),
     );
   }
 
