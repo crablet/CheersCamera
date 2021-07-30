@@ -295,62 +295,10 @@ class _CameraScreenState extends State<CameraScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      InkWell(
-                        onTap: () async {
-                          setState(() {
-                            _currentFlashMode = FlashMode.off;
-                          });
-                          await controller!.setFlashMode(FlashMode.off);
-                        },
-                        child: Icon(
-                          Icons.flash_off,
-                          color: _currentFlashMode == FlashMode.off
-                            ? Colors.amber
-                            : Colors.white,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          setState(() {
-                            _currentFlashMode = FlashMode.auto;
-                          });
-                          await controller!.setFlashMode(FlashMode.auto);
-                        },
-                        child: Icon(
-                          Icons.flash_auto,
-                          color: _currentFlashMode == FlashMode.auto
-                            ? Colors.amber
-                            : Colors.white,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          setState(() {
-                            _currentFlashMode = FlashMode.always;
-                          });
-                          await controller!.setFlashMode(FlashMode.always);
-                        },
-                        child: Icon(
-                          Icons.flash_on,
-                          color: _currentFlashMode == FlashMode.always
-                            ? Colors.amber
-                            : Colors.white,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          setState(() {
-                            _currentFlashMode = FlashMode.torch;
-                          });
-                          await controller!.setFlashMode(FlashMode.torch);
-                        },
-                        child: Icon(
-                          Icons.highlight,
-                          color: _currentFlashMode == FlashMode.torch
-                            ? Colors.amber
-                            : Colors.white,
-                        ),
-                      )
+                      _buildFlashOffWidget(),
+                      _buildFlashAutoWidget(),
+                      _buildFlashOnWidget(),
+                      _buildFlashTorchWidget()
                     ],
                   ),
                 )
@@ -359,6 +307,74 @@ class _CameraScreenState extends State<CameraScreen>
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildFlashTorchWidget() {
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          _currentFlashMode = FlashMode.torch;
+        });
+        await controller!.setFlashMode(FlashMode.torch);
+      },
+      child: Icon(
+        Icons.highlight,
+        color: _currentFlashMode == FlashMode.torch
+          ? Colors.amber
+          : Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildFlashOnWidget() {
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          _currentFlashMode = FlashMode.always;
+        });
+        await controller!.setFlashMode(FlashMode.always);
+      },
+      child: Icon(
+        Icons.flash_on,
+        color: _currentFlashMode == FlashMode.always
+          ? Colors.amber
+          : Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildFlashAutoWidget() {
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          _currentFlashMode = FlashMode.auto;
+        });
+        await controller!.setFlashMode(FlashMode.auto);
+      },
+      child: Icon(
+        Icons.flash_auto,
+        color: _currentFlashMode == FlashMode.auto
+          ? Colors.amber
+          : Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildFlashOffWidget() {
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          _currentFlashMode = FlashMode.off;
+        });
+        await controller!.setFlashMode(FlashMode.off);
+      },
+      child: Icon(
+        Icons.flash_off,
+        color: _currentFlashMode == FlashMode.off
+          ? Colors.amber
+          : Colors.white,
+      ),
     );
   }
 
