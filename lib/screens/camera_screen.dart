@@ -172,37 +172,8 @@ class _CameraScreenState extends State<CameraScreen>
                     _buildChangeExposureOffsetWidget(),
                     Row(
                       children: [
-                        Expanded(
-                          child: Slider(
-                            value: _currentZoomLevel,
-                            min: _minAvailableZoom,
-                            max: _maxAvailableZoom,
-                            activeColor: Colors.white,
-                            inactiveColor: Colors.white30,
-                            onChanged: (value) async {
-                              setState(() {
-                                _currentZoomLevel = value;
-                              });
-                              await controller!.setZoomLevel(value);
-                            },
-                          )
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black87,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                _currentZoomLevel.toStringAsFixed(1) + 'x',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        )
+                        _buildChangeZoomLevelWidget(),
+                        _buildShowZoomLevelWidget()
                       ],
                     ),
                   ],
@@ -233,6 +204,43 @@ class _CameraScreenState extends State<CameraScreen>
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildShowZoomLevelWidget() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            _currentZoomLevel.toStringAsFixed(1) + 'x',
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChangeZoomLevelWidget() {
+    return Expanded(
+      child: Slider(
+        value: _currentZoomLevel,
+        min: _minAvailableZoom,
+        max: _maxAvailableZoom,
+        activeColor: Colors.white,
+        inactiveColor: Colors.white30,
+        onChanged: (value) async {
+          setState(() {
+            _currentZoomLevel = value;
+          });
+          await controller!.setZoomLevel(value);
+        },
+      )
     );
   }
 
