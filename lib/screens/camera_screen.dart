@@ -167,46 +167,7 @@ class _CameraScreenState extends State<CameraScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black87,
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 8.0,
-                            right: 8.0,
-                          ),
-                          child: DropdownButton<ResolutionPreset>(
-                            dropdownColor: Colors.black87,
-                            underline: Container(),
-                            value: currentResolutionPreset,
-                            items: [
-                              for (var preset in resolutionPresets)
-                                DropdownMenuItem(
-                                  child: Text(
-                                    preset.toString().split('.')[1].toUpperCase(),
-                                    style: const TextStyle(
-                                      color: Colors.white
-                                    ),
-                                  ),
-                                  value: preset,
-                                )
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                currentResolutionPreset = value!;
-                                _isCameraInitialized = false;
-                              });
-                              onNewCameraSelected(controller!.description);
-                            },
-                            hint: const Text("Select an item"),
-                          ),
-                        ),
-                      ),
-                    ),
+                    _buildSelectResolutionPresetWidget(),
                     _buildShowExposureOffsetWidget(),
                     _buildChangeExposureOffsetWidget(),
                     Row(
@@ -272,6 +233,49 @@ class _CameraScreenState extends State<CameraScreen>
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildSelectResolutionPresetWidget() {
+    return Align(
+      alignment: Alignment.topRight,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 8.0,
+            right: 8.0,
+          ),
+          child: DropdownButton<ResolutionPreset>(
+            dropdownColor: Colors.black87,
+            underline: Container(),
+            value: currentResolutionPreset,
+            items: [
+              for (var preset in resolutionPresets)
+                DropdownMenuItem(
+                  child: Text(
+                    preset.toString().split('.')[1].toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white
+                    ),
+                  ),
+                  value: preset,
+                )
+            ],
+            onChanged: (value) {
+              setState(() {
+                currentResolutionPreset = value!;
+                _isCameraInitialized = false;
+              });
+              onNewCameraSelected(controller!.description);
+            },
+            hint: const Text("Select an item"),
+          ),
+        ),
+      ),
     );
   }
 
