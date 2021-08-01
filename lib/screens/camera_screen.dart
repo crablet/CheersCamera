@@ -38,6 +38,22 @@ class _CameraScreenState extends State<CameraScreen>
 
   List<File> allFileList = [];
 
+  Future<XFile?> _takePicture() async {
+    final CameraController? cameraController = controller;
+    if (cameraController!.value.isTakingPicture) {
+      // 正在拍照就直接返回
+      return null;
+    }
+
+    try {
+      XFile file = await cameraController.takePicture();
+      return file;
+    } on CameraException catch (e) {
+      debugPrint("Error occurred while taking picture: $e");
+      return null;
+    }
+  }
+
   void onNewCameraSelected(CameraDescription cameraDescription) async {
     final previousCameraController = controller;
 
@@ -206,7 +222,37 @@ class _CameraScreenState extends State<CameraScreen>
                             ],
                           ),
                         ),
-                        // todo: 拍摄按钮在这里呈现
+                        InkWell(
+                          onTap: () async {
+                            XFile? rawImage = await _takePicture();
+                            File imageFile = File(rawImage!.path);
+                            String fileFormat = imageFile.path.split('.').last;
+                            debugPrint(fileFormat);
+
+                            int currentUnix = DateTime.now().microsecondsSinceEpoch;
+                            final directory = await getApplicationDocumentsDirectory();
+                            await imageFile.copy("${directory.path}/$currentUnix.$fileFormat");
+
+                            refreshAlreadyCapturedImages();
+                          },
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              const Icon(
+                                Icons.circle,
+                                color: Colors.white38,
+                                size: 80,
+                              ),
+                              const Icon(
+                                Icons.circle,
+                                color: Colors.white,
+                                size: 65,
+                              ),
+                              Container(),
+                            ],
+                          ),
+                        )
+                        // todo: 第543行
                       ],
                     )
                   ],
