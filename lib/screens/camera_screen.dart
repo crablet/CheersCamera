@@ -24,6 +24,7 @@ class _CameraScreenState extends State<CameraScreen>
   final resolutionPresets = ResolutionPreset.values;
 
   bool _isCameraInitialized = false;
+  bool _isRearCameraSelected = true;
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
   double _minAvailableZoom = 1.0;
@@ -176,6 +177,38 @@ class _CameraScreenState extends State<CameraScreen>
                         _buildShowZoomLevelWidget()
                       ],
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _isCameraInitialized = false;
+                            });
+                            onNewCameraSelected(cameras[_isRearCameraSelected ? 1 : 0]);
+                            setState(() {
+                              _isRearCameraSelected = !_isRearCameraSelected;
+                            });
+                          },
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              const Icon(
+                                Icons.circle,
+                                color: Colors.black38,
+                                size: 60,
+                              ),
+                              Icon(
+                                _isRearCameraSelected ? Icons.camera_front : Icons.camera_rear,
+                                color: Colors.white,
+                                size: 30,
+                              )
+                            ],
+                          ),
+                        ),
+                        // todo: 拍摄按钮在这里呈现
+                      ],
+                    )
                   ],
                 ),
               )
