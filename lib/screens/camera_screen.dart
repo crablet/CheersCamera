@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:cheers_camera/screens/preview_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cheers_camera/main.dart';
@@ -251,8 +252,36 @@ class _CameraScreenState extends State<CameraScreen>
                               Container(),
                             ],
                           ),
+                        ),
+                        InkWell(
+                          onTap: _imageFile != null
+                            ? () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => PreviewScreen(imageFile: _imageFile!, fileList: allFileList)
+                                )
+                              );
+                            }
+                            : null,
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                              image: _imageFile != null
+                                ? DecorationImage(
+                                    image: FileImage(_imageFile!),
+                                    fit: BoxFit.cover,
+                                )
+                                : null
+                            ),
+                          ),
                         )
-                        // todo: 第543行
                       ],
                     )
                   ],
