@@ -197,32 +197,7 @@ class _CameraScreenState extends State<CameraScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isCameraInitialized = false;
-                            });
-                            onNewCameraSelected(cameras[_isRearCameraSelected ? 1 : 0]);
-                            setState(() {
-                              _isRearCameraSelected = !_isRearCameraSelected;
-                            });
-                          },
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              const Icon(
-                                Icons.circle,
-                                color: Colors.black38,
-                                size: 60,
-                              ),
-                              Icon(
-                                _isRearCameraSelected ? Icons.camera_front : Icons.camera_rear,
-                                color: Colors.white,
-                                size: 30,
-                              )
-                            ],
-                          ),
-                        ),
+                        _buildSelectRearCameraWidget(),
                         InkWell(
                           onTap: () async {
                             XFile? rawImage = await _takePicture();
@@ -312,6 +287,35 @@ class _CameraScreenState extends State<CameraScreen>
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildSelectRearCameraWidget() {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isCameraInitialized = false;
+        });
+        onNewCameraSelected(cameras[_isRearCameraSelected ? 1 : 0]);
+        setState(() {
+          _isRearCameraSelected = !_isRearCameraSelected;
+        });
+      },
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Icon(
+            Icons.circle,
+            color: Colors.black38,
+            size: 60,
+          ),
+          Icon(
+            _isRearCameraSelected ? Icons.camera_front : Icons.camera_rear,
+            color: Colors.white,
+            size: 30,
+          )
+        ],
+      ),
     );
   }
 
