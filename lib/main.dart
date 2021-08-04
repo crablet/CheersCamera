@@ -25,7 +25,7 @@ class CheersCamera extends StatelessWidget {
         primarySwatch: Colors.pink,
       ),
       debugShowCheckedModeBanner: false,
-      home: CameraScreen(),
+      home: const CameraScreen(),
     );
   }
 }
