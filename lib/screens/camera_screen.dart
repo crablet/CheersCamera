@@ -199,35 +199,7 @@ class _CameraScreenState extends State<CameraScreen>
                       children: [
                         _buildSelectRearCameraWidget(),
                         _buildTakePictureWidget(),
-                        InkWell(
-                          onTap: _imageFile != null
-                            ? () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => PreviewScreen(imageFile: _imageFile!, fileList: allFileList)
-                                )
-                              );
-                            }
-                            : null,
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(10.0),
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
-                              image: _imageFile != null
-                                ? DecorationImage(
-                                    image: FileImage(_imageFile!),
-                                    fit: BoxFit.cover,
-                                )
-                                : null
-                            ),
-                          ),
-                        )
+                        _buildPreviewPictureWidget()
                       ],
                     )
                   ],
@@ -258,6 +230,38 @@ class _CameraScreenState extends State<CameraScreen>
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildPreviewPictureWidget() {
+    return InkWell(
+      onTap: _imageFile != null
+        ? () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PreviewScreen(imageFile: _imageFile!, fileList: allFileList)
+            )
+          );
+        }
+        : null,
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(
+            color: Colors.white,
+            width: 2,
+          ),
+          image: _imageFile != null
+            ? DecorationImage(
+                image: FileImage(_imageFile!),
+                fit: BoxFit.cover,
+            )
+            : null
+        ),
+      ),
     );
   }
 
