@@ -198,36 +198,7 @@ class _CameraScreenState extends State<CameraScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildSelectRearCameraWidget(),
-                        InkWell(
-                          onTap: () async {
-                            XFile? rawImage = await _takePicture();
-                            File imageFile = File(rawImage!.path);
-                            String fileFormat = imageFile.path.split('.').last;
-                            debugPrint(fileFormat);
-
-                            int currentUnix = DateTime.now().microsecondsSinceEpoch;
-                            final directory = await getApplicationDocumentsDirectory();
-                            await imageFile.copy("${directory.path}/$currentUnix.$fileFormat");
-
-                            refreshAlreadyCapturedImages();
-                          },
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              const Icon(
-                                Icons.circle,
-                                color: Colors.white38,
-                                size: 80,
-                              ),
-                              const Icon(
-                                Icons.circle,
-                                color: Colors.white,
-                                size: 65,
-                              ),
-                              Container(),
-                            ],
-                          ),
-                        ),
+                        _buildTakePictureWidget(),
                         InkWell(
                           onTap: _imageFile != null
                             ? () {
@@ -287,6 +258,39 @@ class _CameraScreenState extends State<CameraScreen>
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildTakePictureWidget() {
+    return InkWell(
+      onTap: () async {
+        XFile? rawImage = await _takePicture();
+        File imageFile = File(rawImage!.path);
+        String fileFormat = imageFile.path.split('.').last;
+        debugPrint(fileFormat);
+
+        int currentUnix = DateTime.now().microsecondsSinceEpoch;
+        final directory = await getApplicationDocumentsDirectory();
+        await imageFile.copy("${directory.path}/$currentUnix.$fileFormat");
+
+        refreshAlreadyCapturedImages();
+      },
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Icon(
+            Icons.circle,
+            color: Colors.white38,
+            size: 80,
+          ),
+          const Icon(
+            Icons.circle,
+            color: Colors.white,
+            size: 65,
+          ),
+          Container(),
+        ],
+      ),
     );
   }
 
