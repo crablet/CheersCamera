@@ -31,8 +31,12 @@ class _CameraScreenState extends State<CameraScreen>
   double _minAvailableZoom = 1.0;
   double _maxAvailableZoom = 1.0;
 
+  // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
+  int _pointers = 0;
+
   ResolutionPreset currentResolutionPreset = ResolutionPreset.max;
 
+  double _baseScale = 1.0;
   double _currentZoomLevel = 1.0;
   double _currentExposureOffset = 0.0;
   FlashMode? _currentFlashMode;
@@ -179,7 +183,7 @@ class _CameraScreenState extends State<CameraScreen>
           aspectRatio: 1 / controller!.value.aspectRatio,
           child: Stack(
             children: [
-              controller!.buildPreview(),
+              _buildCameraPreviewWidget(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
@@ -525,5 +529,59 @@ class _CameraScreenState extends State<CameraScreen>
         style: TextStyle(color: Colors.white),
       ),
     );
+  }
+
+  void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
+    if (controller == null) {
+      return;
+    }
+
+    final CameraController cameraController = controller!;
+    final offset = Offset(
+      details.localPosition.dx / constraints.maxWidth,
+      details.localPosition.dy / constraints.maxHeight,
+    );
+    cameraController.setExposurePoint(offset);
+    cameraController.setFocusPoint(offset);
+  }
+
+  void _handleScaleStart(ScaleStartDetails details) {
+    _baseScale = _currentZoomLevel;
+  }
+
+  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
+    // 两根手指才是缩放的动作，不是的话就不处理该手势
+    if (controller == null || _pointers != 2) {
+      return;
+    }
+
+    _currentZoomLevel = (_baseScale * details.scale).clamp(_minAvailableZoom, _maxAvailableZoom);
+    setState(() {});
+    await controller!.setZoomLevel(_currentZoomLevel);
+  }
+
+  Widget _buildCameraPreviewWidget() {
+    final CameraController? cameraController = controller;
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return _buildLoadedCamera();
+    } else {
+      return Listener(
+        onPointerDown: (_) => ++_pointers,
+        onPointerUp: (_) => --_pointers,
+        child: CameraPreview(
+          controller!,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onScaleStart: _handleScaleStart,
+                onScaleUpdate: _handleScaleUpdate,
+                onTapDown: (details) => onViewFinderTap(details, constraints),
+              );
+            },
+          ),
+        ),
+      );
+    }
   }
 }
