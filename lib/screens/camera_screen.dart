@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cheers_camera/main.dart';
 import 'package:flutter/services.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CameraScreen extends StatefulWidget {
@@ -279,7 +280,9 @@ class _CameraScreenState extends State<CameraScreen>
 
         int currentUnix = DateTime.now().microsecondsSinceEpoch;
         final directory = await getApplicationDocumentsDirectory();
-        await imageFile.copy("${directory.path}/$currentUnix.$fileFormat");
+        final fileName = "$currentUnix.$fileFormat";  // 目前暂定为"时间戳.后缀"的命名，后续会改
+        await imageFile.copy("${directory.path}/$fileName");
+        await ImageGallerySaver.saveFile(imageFile.path, name: fileName); // 保存到相册中
 
         refreshAlreadyCapturedImages();
       },
