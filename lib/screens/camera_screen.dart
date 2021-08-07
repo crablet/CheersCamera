@@ -185,6 +185,7 @@ class _CameraScreenState extends State<CameraScreen>
           child: Stack(
             children: [
               _buildCameraPreviewWidget(),
+              _buildSelectPictureWidget(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
@@ -586,5 +587,18 @@ class _CameraScreenState extends State<CameraScreen>
         ),
       );
     }
+  }
+
+  Widget _buildSelectPictureWidget() {
+    return SizedBox.expand(
+      child: FractionallySizedBox(
+        alignment: Alignment.topRight,
+        widthFactor: 0.5,
+        heightFactor: 1.0,
+        child: Container(
+          color: Colors.pink,
+        ),
+      ),
+    );
   }
 }
