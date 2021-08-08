@@ -30,8 +30,6 @@ class _CameraScreenState extends State<CameraScreen>
 
   File? _imageFile;
 
-  final resolutionPresets = ResolutionPreset.values;
-
   bool _isCameraInitialized = false;
   bool _isRearCameraSelected = true;
   double _minAvailableExposureOffset = 0.0;
@@ -42,7 +40,7 @@ class _CameraScreenState extends State<CameraScreen>
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
 
-  ResolutionPreset currentResolutionPreset = ResolutionPreset.max;
+  final ResolutionPreset currentResolutionPreset = ResolutionPreset.max;
 
   double _baseScale = 1.0;
   double _currentZoomLevel = 1.0;
@@ -207,7 +205,6 @@ class _CameraScreenState extends State<CameraScreen>
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _buildSelectPickImagePositionWidget(),
-                    _buildSelectResolutionPresetWidget(),
                     _buildShowExposureOffsetWidget(),
                     _buildChangeExposureOffsetWidget(),
                     Row(
@@ -447,49 +444,6 @@ class _CameraScreenState extends State<CameraScreen>
           color: Colors.white,
         );
     }
-  }
-
-  Widget _buildSelectResolutionPresetWidget() {
-    return Align(
-      alignment: Alignment.topRight,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: 8.0,
-            right: 8.0,
-          ),
-          child: DropdownButton<ResolutionPreset>(
-            dropdownColor: Colors.black87,
-            underline: Container(),
-            value: currentResolutionPreset,
-            items: [
-              for (var preset in resolutionPresets)
-                DropdownMenuItem(
-                  child: Text(
-                    preset.toString().split('.')[1].toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white
-                    ),
-                  ),
-                  value: preset,
-                )
-            ],
-            onChanged: (value) {
-              setState(() {
-                currentResolutionPreset = value!;
-                _isCameraInitialized = false;
-              });
-              onNewCameraSelected(controller!.description);
-            },
-            hint: const Text("Select an item"),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildChangeExposureOffsetWidget() {
