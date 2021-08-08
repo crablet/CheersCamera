@@ -9,6 +9,13 @@ import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 
+enum PickImageWidgetPosition {
+  left,
+  right,
+  top,
+  bottom,
+}
+
 class CameraScreen extends StatefulWidget {
   const CameraScreen({Key? key}) : super(key: key);
 
@@ -43,6 +50,14 @@ class _CameraScreenState extends State<CameraScreen>
   FlashMode? _currentFlashMode;
 
   List<File> allFileList = [];
+
+  final List<PickImageWidgetPosition> _pickImageWidgetPositionList = [
+    PickImageWidgetPosition.left,
+    PickImageWidgetPosition.right,
+    PickImageWidgetPosition.top,
+    PickImageWidgetPosition.bottom,
+  ];
+  PickImageWidgetPosition _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
 
   Future<XFile?> _takePicture() async {
     final CameraController? cameraController = controller;
@@ -191,6 +206,7 @@ class _CameraScreenState extends State<CameraScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
+                    _buildSelectPickImagePositionWidget(),
                     _buildSelectResolutionPresetWidget(),
                     _buildShowExposureOffsetWidget(),
                     _buildChangeExposureOffsetWidget(),
@@ -370,6 +386,67 @@ class _CameraScreenState extends State<CameraScreen>
         },
       )
     );
+  }
+
+  Widget _buildSelectPickImagePositionWidget() {
+    return Align(
+      alignment: Alignment.topRight,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 8.0,
+            right: 8.0,
+          ),
+          child: DropdownButton<PickImageWidgetPosition>(
+            dropdownColor: Colors.black87,
+            underline: Container(),
+            value: _currentPickImageWidgetPosition,
+            items: [
+              for (var position in _pickImageWidgetPositionList)
+                DropdownMenuItem(
+                  child: _positionEnumToIcon(position),
+                  value: position,
+                )
+            ],
+            onChanged: (value) {
+              setState(() {
+                _currentPickImageWidgetPosition = value!;
+              });
+            },
+            hint: const Text("Select pick image widget position"),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _positionEnumToIcon(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left:
+        return const Icon(
+          Icons.align_horizontal_left,
+          color: Colors.white,
+        );
+      case PickImageWidgetPosition.right:
+        return const Icon(
+          Icons.align_horizontal_right,
+          color: Colors.white,
+        );
+      case PickImageWidgetPosition.top:
+        return const Icon(
+          Icons.align_vertical_top,
+          color: Colors.white,
+        );
+      case PickImageWidgetPosition.bottom:
+        return const Icon(
+          Icons.align_vertical_bottom,
+          color: Colors.white,
+        );
+    }
   }
 
   Widget _buildSelectResolutionPresetWidget() {
