@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:cheers_camera/main.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 enum PickImageWidgetPosition {
@@ -29,6 +30,9 @@ class _CameraScreenState extends State<CameraScreen>
   CameraController? controller;
 
   File? _imageFile;
+
+  bool _hasSelectedPicture = false;
+  File? _selectedFile;
 
   bool _isCameraInitialized = false;
   bool _isRearCameraSelected = true;
@@ -626,9 +630,28 @@ class _CameraScreenState extends State<CameraScreen>
         alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
         widthFactor: _positionEnumToWidthFactor(_currentPickImageWidgetPosition),
         heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
-        child: Container(
-          color: Colors.pink,
-        ),
+        child: !_hasSelectedPicture
+          ? Container(
+            color: Colors.pink,
+            child: ElevatedButton(
+              child: const Text("select"),
+              onPressed: () async {
+                XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+                setState(() {
+                  if (file == null) {
+                    _selectedFile = null;
+                    _hasSelectedPicture = false;
+                  } else {
+                    _selectedFile = File(file.path);
+                    _hasSelectedPicture = true;
+                  }
+                });
+              },
+            ),
+          ) : Image.file(
+            _selectedFile!,
+            fit: BoxFit.cover,
+          )
       ),
     );
   }

@@ -33,6 +33,7 @@ dependencies:
   path_provider:
   image_gallery_saver:
   permission_handler:
+  image_picker:
 
 
   # The following adds the Cupertino Icons font to your application.
