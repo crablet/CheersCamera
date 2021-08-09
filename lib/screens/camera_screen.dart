@@ -623,13 +623,40 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildSelectPictureWidget() {
     return SizedBox.expand(
       child: FractionallySizedBox(
-        alignment: Alignment.topRight,
-        widthFactor: 0.5,
-        heightFactor: 1.0,
+        alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
+        widthFactor: _positionEnumToWidthFactor(_currentPickImageWidgetPosition),
+        heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
         child: Container(
           color: Colors.pink,
         ),
       ),
     );
+  }
+
+  Alignment _positionEnumToAlignment(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return Alignment.topLeft;
+      case PickImageWidgetPosition.right: return Alignment.topRight;
+      case PickImageWidgetPosition.top: return Alignment.topLeft;
+      case PickImageWidgetPosition.bottom: return Alignment.bottomLeft;
+    }
+  }
+
+  double _positionEnumToWidthFactor(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return 0.5;
+      case PickImageWidgetPosition.right: return 0.5;
+      case PickImageWidgetPosition.top: return 1;
+      case PickImageWidgetPosition.bottom: return 1;
+    }
+  }
+
+  double _positionEnumToHeightFactor(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return 1;
+      case PickImageWidgetPosition.right: return 1;
+      case PickImageWidgetPosition.top: return 0.5;
+      case PickImageWidgetPosition.bottom: return 0.5;
+    }
   }
 }
