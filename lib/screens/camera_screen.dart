@@ -188,21 +188,21 @@ class _CameraScreenState extends State<CameraScreen>
         child: Scaffold(
           backgroundColor: Colors.black,
           body: _isCameraInitialized
-            ? _buildLoadedCamera()
+            ? _buildLoadedCamera(context)
             : _buildLoadingCamera(),
         )
     );
   }
 
-  Widget _buildLoadedCamera() {
+  Widget _buildLoadedCamera(BuildContext context) {
     return Column(
       children: [
         AspectRatio(
           aspectRatio: 1 / controller!.value.aspectRatio,
           child: Stack(
             children: [
-              _buildCameraPreviewWidget(),
-              _buildSelectPictureWidget(),
+              _buildCameraPreviewWidget(context),
+              _buildSelectPictureWidget(context),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
@@ -599,10 +599,10 @@ class _CameraScreenState extends State<CameraScreen>
     await controller!.setZoomLevel(_currentZoomLevel);
   }
 
-  Widget _buildCameraPreviewWidget() {
+  Widget _buildCameraPreviewWidget(BuildContext context) {
     final CameraController? cameraController = controller;
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return _buildLoadedCamera();
+      return _buildLoadedCamera(context);
     } else {
       return Listener(
         onPointerDown: (_) => ++_pointers,
@@ -624,7 +624,9 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  Widget _buildSelectPictureWidget() {
+  final _transformationController = TransformationController();
+
+  Widget _buildSelectPictureWidget(BuildContext context) {
     return SizedBox.expand(
       child: FractionallySizedBox(
         alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
@@ -650,11 +652,22 @@ class _CameraScreenState extends State<CameraScreen>
             ),
           ) :
           RepaintBoundary(
-            child: InteractiveViewer(
-              child: Image.file(
-                _selectedFile!,
-              )
-          )
+            child: LayoutBuilder(
+              builder: (_, constraint) {
+                return InteractiveViewer(
+                  transformationController: _transformationController,
+                  constrained: false,
+                  child: Builder(
+                    builder: (context) {
+                      _setInitialScale(context, constraint.biggest);
+                      return Image.file(
+                          _selectedFile!,
+                      );
+                    },
+                  ),
+                );
+              },
+            )
           )
       ),
     );
@@ -685,5 +698,21 @@ class _CameraScreenState extends State<CameraScreen>
       case PickImageWidgetPosition.top: return 0.5;
       case PickImageWidgetPosition.bottom: return 0.5;
     }
+  }
+
+  double _getCoverRatio(Size outside, Size inside) {
+    return outside.width / outside.height > inside.width / inside.height
+        ? outside.width / inside.width
+        : outside.height / inside.height;
+  }
+
+  void _setInitialScale(BuildContext context, Size parentSize) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      final renderBox = context.findRenderObject() as RenderBox?;
+      final childSize = renderBox?.size ?? Size.zero;
+      if (childSize != Size.zero) {
+        _transformationController.value = Matrix4.identity() * _getCoverRatio(parentSize, childSize);
+      }
+    });
   }
 }
