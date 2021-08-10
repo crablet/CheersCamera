@@ -648,9 +648,13 @@ class _CameraScreenState extends State<CameraScreen>
                 });
               },
             ),
-          ) : Image.file(
-            _selectedFile!,
-            fit: BoxFit.cover,
+          ) :
+          RepaintBoundary(
+            child: InteractiveViewer(
+              child: Image.file(
+                _selectedFile!,
+              )
+          )
           )
       ),
     );
