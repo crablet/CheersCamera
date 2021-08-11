@@ -179,6 +179,7 @@ class _CameraScreenState extends State<CameraScreen>
   @override
   void dispose() {
     controller?.dispose();
+    _transformationController.dispose();
     super.dispose();
   }
 
