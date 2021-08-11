@@ -624,6 +624,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
+  // 初始化变换控制器
   final _transformationController = TransformationController();
 
   Widget _buildSelectPictureWidget(BuildContext context) {
@@ -657,8 +658,10 @@ class _CameraScreenState extends State<CameraScreen>
                 return InteractiveViewer(
                   transformationController: _transformationController,
                   constrained: false,
+                  minScale: 0.053,
                   child: Builder(
                     builder: (context) {
+                      // 有图片被加载了，设置初始比例
                       _setInitialScale(context, constraint.biggest);
                       return Image.file(
                           _selectedFile!,
@@ -700,12 +703,14 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
+  // 基于外部以及内部（图像）的约束计算比例
   double _getCoverRatio(Size outside, Size inside) {
     return outside.width / outside.height > inside.width / inside.height
         ? outside.width / inside.width
         : outside.height / inside.height;
   }
 
+  // 设置图像的初始比例
   void _setInitialScale(BuildContext context, Size parentSize) {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       final renderBox = context.findRenderObject() as RenderBox?;
