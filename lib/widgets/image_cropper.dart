@@ -1,4 +1,8 @@
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 
 class ImageCropper extends StatefulWidget {
   const ImageCropper({
@@ -15,6 +19,26 @@ class ImageCropper extends StatefulWidget {
 
   @override
   _ImageCropperState createState() => _ImageCropperState();
+
+  /// 裁剪框中的图片并将其转成png格式输出，表示为 [Uint8List]
+  //. 裁剪部件需要用其key引用
+  static Future<Uint8List?> crop({
+    required GlobalKey cropperKey,
+    double pixelRatio = 3,
+  }) async {
+    // 获取裁剪后的图像
+    final renderObject = cropperKey.currentContext!.findRenderObject();
+    final boundary = renderObject as RenderRepaintBoundary;
+    final image = await boundary.toImage(pixelRatio: pixelRatio);
+
+    // 将图片转化为PNG格式，并返回
+    final byteData = await image.toByteData(
+      format: ImageByteFormat.png,
+    );
+    final pngBytes = byteData?.buffer.asUint8List();
+
+    return pngBytes;
+  }
 }
 
 class _ImageCropperState extends State<ImageCropper> {
