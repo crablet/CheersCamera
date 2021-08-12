@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:cheers_camera/screens/preview_screen.dart';
+import 'package:cheers_camera/widgets/image_cropper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cheers_camera/main.dart';
@@ -26,6 +27,8 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen>
   with WidgetsBindingObserver {
+
+  final GlobalKey _cropperKey = GlobalKey(debugLabel: "cropperKey");
 
   CameraController? controller;
 
@@ -652,26 +655,10 @@ class _CameraScreenState extends State<CameraScreen>
                 });
               },
             ),
-          ) :
-          RepaintBoundary(
-            child: LayoutBuilder(
-              builder: (_, constraint) {
-                return InteractiveViewer(
-                  transformationController: _transformationController,
-                  constrained: false,
-                  minScale: 0.053,
-                  child: Builder(
-                    builder: (context) {
-                      // 有图片被加载了，设置初始比例
-                      _setInitialScale(context, constraint.biggest);
-                      return Image.file(
-                          _selectedFile!,
-                      );
-                    },
-                  ),
-                );
-              },
-            )
+          )
+          : ImageCropper(
+              cropperKey: _cropperKey,
+              image: Image.file(_selectedFile!)
           )
       ),
     );
@@ -702,23 +689,5 @@ class _CameraScreenState extends State<CameraScreen>
       case PickImageWidgetPosition.top: return 0.5;
       case PickImageWidgetPosition.bottom: return 0.5;
     }
-  }
-
-  // 基于外部以及内部（图像）的约束计算比例
-  double _getCoverRatio(Size outside, Size inside) {
-    return outside.width / outside.height > inside.width / inside.height
-        ? outside.width / inside.width
-        : outside.height / inside.height;
-  }
-
-  // 设置图像的初始比例
-  void _setInitialScale(BuildContext context, Size parentSize) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      final renderBox = context.findRenderObject() as RenderBox?;
-      final childSize = renderBox?.size ?? Size.zero;
-      if (childSize != Size.zero) {
-        _transformationController.value = Matrix4.identity() * _getCoverRatio(parentSize, childSize);
-      }
-    });
   }
 }
