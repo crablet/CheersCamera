@@ -182,7 +182,6 @@ class _CameraScreenState extends State<CameraScreen>
   @override
   void dispose() {
     controller?.dispose();
-    _transformationController.dispose();
     super.dispose();
   }
 
@@ -627,9 +626,6 @@ class _CameraScreenState extends State<CameraScreen>
       );
     }
   }
-
-  // 初始化变换控制器
-  final _transformationController = TransformationController();
 
   Widget _buildSelectPictureWidget(BuildContext context) {
     return SizedBox.expand(
