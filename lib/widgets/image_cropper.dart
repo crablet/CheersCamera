@@ -46,6 +46,21 @@ class _ImageCropperState extends State<ImageCropper> {
   // 初始化变换控制器
   final _transformationController = TransformationController();
 
+  // 为了避免不必要的刷新，用该变量表示状态变化后新旧widget是否改变了待裁剪的图像
+  late bool _hasImageUpdate;
+
+  @override
+  void initState() {
+    super.initState();
+    _hasImageUpdate = true;
+  }
+
+  @override
+  void didUpdateWidget(covariant ImageCropper oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _hasImageUpdate = oldWidget.image.image != widget.image.image;
+  }
+
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
@@ -57,8 +72,10 @@ class _ImageCropperState extends State<ImageCropper> {
               minScale: 0.053,
               child: Builder(
                 builder: (context) {
-                  // 有图片被加载了，设置初始比例
-                  _setInitialScale(context, constraint.biggest);
+                  if (_hasImageUpdate) {
+                    // 有图片被加载了，设置初始比例
+                    _setInitialScale(context, constraint.biggest);
+                  }
                   return widget.image;
                 },
               ),
