@@ -47,6 +47,24 @@ class _ImageCropperState extends State<ImageCropper> {
   // 为了避免不必要的刷新，用该变量表示状态变化后新旧widget是否改变了待裁剪的图像
   late bool _hasImageUpdate;
 
+  // 是否需要设置图像初始比例
+  bool _shouldSetInitialScale = false;
+
+  // 用于将图像流监听器加在图像上的图像配置
+  final _imageConfiguration = const ImageConfiguration();
+
+  // 图像流监听器是用作指明图像是否完成加载的
+  // 这可以帮助[InteractiveView]决定初始缩放比例，我们希望缩放至尽可能填充预览窗口
+  late final _imageStreamListener = ImageStreamListener(
+    (_, __) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        setState(() {
+          _shouldSetInitialScale = true;
+        });
+      });
+    }
+  );
+
   @override
   void initState() {
     super.initState();
@@ -71,10 +89,16 @@ class _ImageCropperState extends State<ImageCropper> {
               minScale: 0.053,
               child: Builder(
                 builder: (context) {
-                  if (_hasImageUpdate) {
-                    // 有图片被加载了，设置初始比例
+                  final imageStream = widget.image.image.resolve(
+                    _imageConfiguration,
+                  );
+                  if (_hasImageUpdate && _shouldSetInitialScale) {
+                    imageStream.removeListener(_imageStreamListener);
                     _setInitialScale(context, constraint.biggest);
+                  } else if (_hasImageUpdate && !_shouldSetInitialScale) {
+                    imageStream.addListener(_imageStreamListener);
                   }
+
                   return widget.image;
                 },
               ),
