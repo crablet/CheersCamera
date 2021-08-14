@@ -21,7 +21,7 @@ class ImageCropper extends StatefulWidget {
   _ImageCropperState createState() => _ImageCropperState();
 
   /// 裁剪框中的图片并将其转成png格式输出，表示为 [Uint8List]
-  //. 裁剪部件需要用其key引用
+  /// 裁剪部件需要用其key引用
   static Future<Uint8List?> crop({
     required GlobalKey cropperKey,
     double pixelRatio = 3,
@@ -42,9 +42,7 @@ class ImageCropper extends StatefulWidget {
 }
 
 class _ImageCropperState extends State<ImageCropper> {
-
-  // 初始化变换控制器
-  final _transformationController = TransformationController();
+  late TransformationController _transformationController;
 
   // 为了避免不必要的刷新，用该变量表示状态变化后新旧widget是否改变了待裁剪的图像
   late bool _hasImageUpdate;
@@ -53,6 +51,7 @@ class _ImageCropperState extends State<ImageCropper> {
   void initState() {
     super.initState();
     _hasImageUpdate = true;
+    _transformationController = TransformationController();
   }
 
   @override
@@ -101,5 +100,11 @@ class _ImageCropperState extends State<ImageCropper> {
         _transformationController.value = Matrix4.identity() * _getCoverRatio(parentSize, childSize);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _transformationController.dispose();
+    super.dispose();
   }
 }
