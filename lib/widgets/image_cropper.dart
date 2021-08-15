@@ -81,6 +81,7 @@ class _ImageCropperState extends State<ImageCropper> {
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
+        key: widget.cropperKey,
         child: LayoutBuilder(
           builder: (_, constraint) {
             return InteractiveViewer(
