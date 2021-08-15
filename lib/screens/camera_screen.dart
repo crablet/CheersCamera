@@ -35,6 +35,7 @@ class _CameraScreenState extends State<CameraScreen>
   File? _imageFile;
 
   bool _hasSelectedPicture = false;
+  bool _hasTakenPicture = false;
   File? _selectedFile;
 
   bool _isCameraInitialized = false;
@@ -224,7 +225,9 @@ class _CameraScreenState extends State<CameraScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildSelectRearCameraWidget(),
-                        _buildTakePictureWidget(),
+                        _hasSelectedPicture && _hasTakenPicture
+                            ? _buildMergePictureWidget()
+                            : _buildTakePictureWidget(),
                         _buildPreviewPictureWidget()
                       ],
                     )
@@ -305,6 +308,10 @@ class _CameraScreenState extends State<CameraScreen>
         await imageFile.copy("${directory.path}/$fileName");
         await ImageGallerySaver.saveFile(imageFile.path, name: fileName); // 保存到相册中
 
+        setState(() {
+          _hasTakenPicture = true;
+        });
+
         refreshAlreadyCapturedImages();
       },
       child: Stack(
@@ -319,6 +326,40 @@ class _CameraScreenState extends State<CameraScreen>
             Icons.circle,
             color: Colors.white,
             size: 65,
+          ),
+          Container(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMergePictureWidget() {
+    return InkWell(
+      onTap: () async {
+        if (_hasSelectedPicture) {
+          final png = await ImageCropper.crop(cropperKey: _cropperKey);
+          if (png != null) {
+            int currentUnix = DateTime.now().microsecondsSinceEpoch;
+            final directory = await getApplicationDocumentsDirectory();
+            final croppedFileName = "{$currentUnix}_cropped.png";
+            final file = await File("${directory.path}/$croppedFileName").create();
+            file.writeAsBytesSync(png);
+            await ImageGallerySaver.saveFile(file.path, name: croppedFileName);
+          }
+        }
+      },
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Icon(
+            Icons.circle,
+            color: Colors.white38,
+            size: 80,
+          ),
+          const Icon(
+            Icons.done,
+            color: Colors.white,
+            size: 53,
           ),
           Container(),
         ],
