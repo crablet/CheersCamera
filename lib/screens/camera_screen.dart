@@ -349,10 +349,27 @@ class _CameraScreenState extends State<CameraScreen>
 
             final image1 = image.decodeImage(_imageFile!.readAsBytesSync());
             final image2 = image.decodeImage(file.readAsBytesSync());
-            final image3 = image.copyResize(image2!, width: image1!.width ~/ 2, height: image1.height);
-            final mergedImage = image.Image(image1.width, image1.height);
+            final mergedImage = image.Image(image1!.width, image1.height);
             image.copyInto(mergedImage, image1, blend: true);
-            image.copyInto(mergedImage, image3, dstX: 0, blend: true);
+            switch (_currentPickImageWidgetPosition) {
+              case PickImageWidgetPosition.left:
+                final image3 = image.copyResize(image2!, width: image1.width ~/ 2, height: image1.height);
+                image.copyInto(mergedImage, image3, dstX: 0, blend: true);
+                break;
+              case PickImageWidgetPosition.right:
+                final image3 = image.copyResize(image2!, width: image1.width ~/ 2, height: image1.height);
+                image.copyInto(mergedImage, image3, dstX: image1.width ~/ 2, blend: true);
+                break;
+              case PickImageWidgetPosition.top:
+                final image3 = image.copyResize(image2!, width: image1.width, height: image1.height ~/ 2);
+                image.copyInto(mergedImage, image3, dstY: 0, blend: true);
+                break;
+              case PickImageWidgetPosition.bottom:
+                final image3 = image.copyResize(image2!, width: image1.width, height: image1.height ~/ 2);
+                image.copyInto(mergedImage, image3, dstY: image1.height ~/ 2, blend: true);
+                break;
+            }
+
             final newFile = await File("${directory.path}/new_{$croppedFileName}").create();
             newFile.writeAsBytesSync(image.encodePng(mergedImage));
             await ImageGallerySaver.saveFile(newFile.path, name: "new_{$croppedFileName}");
