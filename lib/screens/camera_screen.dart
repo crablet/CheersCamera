@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cheers_camera/main.dart';
 import 'package:flutter/services.dart';
+import 'package:image/image.dart' as image;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -345,6 +346,16 @@ class _CameraScreenState extends State<CameraScreen>
             final file = await File("${directory.path}/$croppedFileName").create();
             file.writeAsBytesSync(png);
             await ImageGallerySaver.saveFile(file.path, name: croppedFileName);
+
+            final image1 = image.decodeImage(_imageFile!.readAsBytesSync());
+            final image2 = image.decodeImage(file.readAsBytesSync());
+            final image3 = image.copyResize(image2!, width: image1!.width ~/ 2, height: image1.height);
+            final mergedImage = image.Image(image1.width, image1.height);
+            image.copyInto(mergedImage, image1, blend: true);
+            image.copyInto(mergedImage, image3, dstX: 0, blend: true);
+            final newFile = await File("${directory.path}/new_{$croppedFileName}").create();
+            newFile.writeAsBytesSync(image.encodePng(mergedImage));
+            await ImageGallerySaver.saveFile(newFile.path, name: "new_{$croppedFileName}");
           }
         }
       },
