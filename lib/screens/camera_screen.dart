@@ -347,27 +347,27 @@ class _CameraScreenState extends State<CameraScreen>
             file.writeAsBytesSync(png);
             await ImageGallerySaver.saveFile(file.path, name: croppedFileName);
 
-            final image1 = image.decodeImage(_imageFile!.readAsBytesSync());
-            final image2 = image.decodeImage(file.readAsBytesSync());
-            if (image1 != null && image2 != null) {
-              final mergedImage = image.Image(image1.width, image1.height);
-              image.copyInto(mergedImage, image1, blend: true);
+            final imageFromCamera = image.decodeImage(_imageFile!.readAsBytesSync());
+            final imageFromSelected = image.decodeImage(file.readAsBytesSync());
+            if (imageFromCamera != null && imageFromSelected != null) {
+              final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height);
+              image.copyInto(mergedImage, imageFromCamera, blend: true);
               switch (_currentPickImageWidgetPosition) {
                 case PickImageWidgetPosition.left:
-                  final image3 = image.copyResize(image2, width: image1.width ~/ 2, height: image1.height);
-                  image.copyInto(mergedImage, image3, dstX: 0, blend: true);
+                  final imageFromSelectedResized = image.copyResize(imageFromSelected, width: imageFromCamera.width ~/ 2, height: imageFromCamera.height);
+                  image.copyInto(mergedImage, imageFromSelectedResized, dstX: 0, blend: true);
                   break;
                 case PickImageWidgetPosition.right:
-                  final image3 = image.copyResize(image2, width: image1.width ~/ 2, height: image1.height);
-                  image.copyInto(mergedImage, image3, dstX: image1.width ~/ 2, blend: true);
+                  final imageFromSelectedResized = image.copyResize(imageFromSelected, width: imageFromCamera.width ~/ 2, height: imageFromCamera.height);
+                  image.copyInto(mergedImage, imageFromSelectedResized, dstX: imageFromCamera.width ~/ 2, blend: true);
                   break;
                 case PickImageWidgetPosition.top:
-                  final image3 = image.copyResize(image2, width: image1.width, height: image1.height ~/ 2);
-                  image.copyInto(mergedImage, image3, dstY: 0, blend: true);
+                  final imageFromSelectedResized = image.copyResize(imageFromSelected, width: imageFromCamera.width, height: imageFromCamera.height ~/ 2);
+                  image.copyInto(mergedImage, imageFromSelectedResized, dstY: 0, blend: true);
                   break;
                 case PickImageWidgetPosition.bottom:
-                  final image3 = image.copyResize(image2, width: image1.width, height: image1.height ~/ 2);
-                  image.copyInto(mergedImage, image3, dstY: image1.height ~/ 2, blend: true);
+                  final imageFromSelectedResized = image.copyResize(imageFromSelected, width: imageFromCamera.width, height: imageFromCamera.height ~/ 2);
+                  image.copyInto(mergedImage, imageFromSelectedResized, dstY: imageFromCamera.height ~/ 2, blend: true);
                   break;
               }
 
