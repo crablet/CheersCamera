@@ -338,13 +338,13 @@ class _CameraScreenState extends State<CameraScreen>
     return InkWell(
       onTap: () async {
         if (_hasSelectedPicture) {
-          final png = await ImageCropper.crop(cropperKey: _cropperKey);
-          if (png != null) {
+          final croppedImage = await ImageCropper.crop(cropperKey: _cropperKey);
+          if (croppedImage != null) {
             int currentUnix = DateTime.now().microsecondsSinceEpoch;
             final directory = await getApplicationDocumentsDirectory();
             final croppedFileName = "{$currentUnix}_cropped.png";
             final file = await File("${directory.path}/$croppedFileName").create();
-            file.writeAsBytesSync(png);
+            file.writeAsBytesSync(croppedImage);
             await ImageGallerySaver.saveFile(file.path, name: croppedFileName);
 
             final imageFromCamera = image.decodeImage(_imageFile!.readAsBytesSync());
