@@ -354,20 +354,56 @@ class _CameraScreenState extends State<CameraScreen>
               image.copyInto(mergedImage, imageFromCamera, blend: true);
               switch (_currentPickImageWidgetPosition) {
                 case PickImageWidgetPosition.left:
-                  final imageFromSelectedResized = image.copyResize(imageFromSelected, width: imageFromCamera.width ~/ 2, height: imageFromCamera.height);
-                  image.copyInto(mergedImage, imageFromSelectedResized, dstX: 0, blend: true);
+                  final imageFromSelectedResized = image.copyResize(
+                        imageFromSelected,
+                        width: imageFromCamera.width ~/ 2,
+                        height: imageFromCamera.height
+                    );
+                  image.copyInto(
+                      mergedImage,
+                      imageFromSelectedResized,
+                      dstX: 0,
+                      blend: true
+                  );
                   break;
                 case PickImageWidgetPosition.right:
-                  final imageFromSelectedResized = image.copyResize(imageFromSelected, width: imageFromCamera.width ~/ 2, height: imageFromCamera.height);
-                  image.copyInto(mergedImage, imageFromSelectedResized, dstX: imageFromCamera.width ~/ 2, blend: true);
+                  final imageFromSelectedResized = image.copyResize(
+                        imageFromSelected,
+                        width: imageFromCamera.width ~/ 2,
+                        height: imageFromCamera.height
+                    );
+                  image.copyInto(
+                      mergedImage,
+                      imageFromSelectedResized,
+                      dstX: imageFromCamera.width ~/ 2,
+                      blend: true
+                  );
                   break;
                 case PickImageWidgetPosition.top:
-                  final imageFromSelectedResized = image.copyResize(imageFromSelected, width: imageFromCamera.width, height: imageFromCamera.height ~/ 2);
-                  image.copyInto(mergedImage, imageFromSelectedResized, dstY: 0, blend: true);
+                  final imageFromSelectedResized = image.copyResize(
+                        imageFromSelected,
+                        width: imageFromCamera.width,
+                        height: imageFromCamera.height ~/ 2
+                    );
+                  image.copyInto(
+                      mergedImage,
+                      imageFromSelectedResized,
+                      dstY: 0,
+                      blend: true
+                  );
                   break;
                 case PickImageWidgetPosition.bottom:
-                  final imageFromSelectedResized = image.copyResize(imageFromSelected, width: imageFromCamera.width, height: imageFromCamera.height ~/ 2);
-                  image.copyInto(mergedImage, imageFromSelectedResized, dstY: imageFromCamera.height ~/ 2, blend: true);
+                  final imageFromSelectedResized = image.copyResize(
+                        imageFromSelected,
+                        width: imageFromCamera.width,
+                        height: imageFromCamera.height ~/ 2
+                    );
+                  image.copyInto(
+                      mergedImage,
+                      imageFromSelectedResized,
+                      dstY: imageFromCamera.height ~/ 2,
+                      blend: true
+                  );
                   break;
               }
 
