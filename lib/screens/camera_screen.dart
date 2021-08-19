@@ -193,21 +193,21 @@ class _CameraScreenState extends State<CameraScreen>
         child: Scaffold(
           backgroundColor: Colors.black,
           body: _isCameraInitialized
-            ? _buildLoadedCamera(context)
+            ? _buildLoadedCamera()
             : _buildLoadingCamera(),
         )
     );
   }
 
-  Widget _buildLoadedCamera(BuildContext context) {
+  Widget _buildLoadedCamera() {
     return Column(
       children: [
         AspectRatio(
           aspectRatio: 1 / controller!.value.aspectRatio,
           child: Stack(
             children: [
-              _buildCameraPreviewWidget(context),
-              _buildSelectPictureWidget(context),
+              _buildCameraPreviewWidget(),
+              _buildSelectPictureWidget(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
@@ -709,10 +709,10 @@ class _CameraScreenState extends State<CameraScreen>
     await controller!.setZoomLevel(_currentZoomLevel);
   }
 
-  Widget _buildCameraPreviewWidget(BuildContext context) {
+  Widget _buildCameraPreviewWidget() {
     final CameraController? cameraController = controller;
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return _buildLoadedCamera(context);
+      return _buildLoadedCamera();
     } else {
       return Listener(
         onPointerDown: (_) => ++_pointers,
@@ -734,7 +734,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  Widget _buildSelectPictureWidget(BuildContext context) {
+  Widget _buildSelectPictureWidget() {
     return SizedBox.expand(
       child: FractionallySizedBox(
         alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
