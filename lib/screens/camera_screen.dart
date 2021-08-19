@@ -742,10 +742,10 @@ class _CameraScreenState extends State<CameraScreen>
         heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
         child: !_hasSelectedPicture
           ? Container(
-            color: Colors.pink,
-            child: ElevatedButton(
-              child: const Text("select"),
-              onPressed: () async {
+            color: Colors.black38,
+            child: InkWell(
+              child: const Icon(Icons.add_a_photo, color: Colors.white,),
+              onTap: () async {
                 XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
                 setState(() {
                   if (file == null) {
