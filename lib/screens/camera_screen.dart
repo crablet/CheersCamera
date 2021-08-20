@@ -218,8 +218,8 @@ class _CameraScreenState extends State<CameraScreen>
                     _buildChangeExposureOffsetWidget(),
                     Row(
                       children: [
+                        _buildShowZoomLevelWidget(),
                         _buildChangeZoomLevelWidget(),
-                        _buildShowZoomLevelWidget()
                       ],
                     ),
                     Row(
