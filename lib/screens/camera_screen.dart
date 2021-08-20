@@ -248,10 +248,10 @@ class _CameraScreenState extends State<CameraScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      _buildFlashTorchWidget(),
                       _buildFlashOffWidget(),
                       _buildFlashAutoWidget(),
                       _buildFlashOnWidget(),
-                      _buildFlashTorchWidget()
                     ],
                   ),
                 )
