@@ -95,7 +95,7 @@ class _ImageCropperState extends State<ImageCropper> {
                   );
                   if (_hasImageUpdate && _shouldSetInitialScale) {
                     imageStream.removeListener(_imageStreamListener);
-                    _setInitialScale(context, constraint.biggest);
+                    _setInitialScale(context, constraint.smallest);
                   } else if (_hasImageUpdate && !_shouldSetInitialScale) {
                     imageStream.addListener(_imageStreamListener);
                   }
