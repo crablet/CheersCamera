@@ -29,7 +29,11 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen>
   with WidgetsBindingObserver {
 
-  final GlobalKey _cropperKey = GlobalKey(debugLabel: "cropperKey");
+  final GlobalKey _cropperKeyForSelectPictureWidget =
+    GlobalKey(debugLabel: "cropperKeyForSelectPictureWidget");
+
+  final GlobalKey _cropperKeyForTakePictureWidget =
+    GlobalKey(debugLabel: "cropperKeyForTakePictureWidget");
 
   CameraController? controller;
 
@@ -208,6 +212,7 @@ class _CameraScreenState extends State<CameraScreen>
             children: [
               _buildCameraPreviewWidget(),
               _buildSelectPictureWidget(),
+              if (_hasTakenPicture) _buildCropCameraImageWidget(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
@@ -338,7 +343,7 @@ class _CameraScreenState extends State<CameraScreen>
     return InkWell(
       onTap: () async {
         if (_hasSelectedPicture) {
-          final croppedImage = await ImageCropper.crop(cropperKey: _cropperKey);
+          final croppedImage = await ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
           if (croppedImage != null) {
             int currentUnix = DateTime.now().microsecondsSinceEpoch;
             final directory = await getApplicationDocumentsDirectory();
@@ -760,9 +765,23 @@ class _CameraScreenState extends State<CameraScreen>
             ),
           )
           : ImageCropper(
-              cropperKey: _cropperKey,
+              cropperKey: _cropperKeyForSelectPictureWidget,
               image: Image.file(_selectedFile!)
           )
+      ),
+    );
+  }
+
+  Widget _buildCropCameraImageWidget() {
+    return SizedBox.expand(
+      child: FractionallySizedBox(
+        alignment: _positionEnumToCropCameraImageAlignment(_currentPickImageWidgetPosition),
+        widthFactor: _positionEnumToCropCameraImageWidthFactor(_currentPickImageWidgetPosition),
+        heightFactor: _positionEnumToCropCameraImageHeightFactor(_currentPickImageWidgetPosition),
+        child: ImageCropper(
+          cropperKey: _cropperKeyForTakePictureWidget,
+          image: Image.file(_imageFile!),
+        ),
       ),
     );
   }
@@ -786,6 +805,33 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   double _positionEnumToHeightFactor(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return 1;
+      case PickImageWidgetPosition.right: return 1;
+      case PickImageWidgetPosition.top: return 0.5;
+      case PickImageWidgetPosition.bottom: return 0.5;
+    }
+  }
+
+  Alignment _positionEnumToCropCameraImageAlignment(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return Alignment.topRight;
+      case PickImageWidgetPosition.right: return Alignment.topLeft;
+      case PickImageWidgetPosition.top: return Alignment.bottomLeft;
+      case PickImageWidgetPosition.bottom: return Alignment.topLeft;
+    }
+  }
+
+  double _positionEnumToCropCameraImageWidthFactor(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return 0.5;
+      case PickImageWidgetPosition.right: return 0.5;
+      case PickImageWidgetPosition.top: return 1;
+      case PickImageWidgetPosition.bottom: return 1;
+    }
+  }
+
+  double _positionEnumToCropCameraImageHeightFactor(PickImageWidgetPosition position) {
     switch (position) {
       case PickImageWidgetPosition.left: return 1;
       case PickImageWidgetPosition.right: return 1;
