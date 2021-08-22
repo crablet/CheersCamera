@@ -50,6 +50,8 @@ class _CameraScreenState extends State<CameraScreen>
   double _minAvailableZoom = 1.0;
   double _maxAvailableZoom = 1.0;
 
+  bool _showFlashChoiceWidget = false;
+
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
 
@@ -243,27 +245,42 @@ class _CameraScreenState extends State<CameraScreen>
             ],
           ),
         ),
-        Expanded(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
+        _buildToolboxWidget(),
+        _buildToolBoxDetailWidget(),
+      ],
+    );
+  }
+
+  Widget _buildToolBoxDetailWidget() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: _showFlashChoiceWidget ? _buildFlashChoiceWidget() : Container()
+    );
+  }
+
+  Widget _buildToolboxWidget() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildFlashOffWidget(),
-                      _buildFlashAutoWidget(),
-                      _buildFlashOnWidget(),
-                    ],
-                  ),
-                )
+                InkWell(
+                  child: _buildCurrentFlashModeIcon(),
+                  onTap: () {
+                    setState(() {
+                      _showFlashChoiceWidget = !_showFlashChoiceWidget;
+                    });
+                  },
+                ),
               ],
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
@@ -607,6 +624,15 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
+  Widget _buildCurrentFlashModeIcon() {
+    switch (_currentFlashMode) {
+      case FlashMode.always: return const Icon(Icons.flash_on, color: Colors.white);
+      case FlashMode.auto: return const Icon(Icons.flash_auto, color: Colors.white);
+      case FlashMode.off: return const Icon(Icons.flash_off, color: Colors.white);
+      default: return Container();
+    }
+  }
+
   Widget _buildFlashOnWidget() {
     return InkWell(
       onTap: () async {
@@ -637,6 +663,27 @@ class _CameraScreenState extends State<CameraScreen>
         color: _currentFlashMode == FlashMode.auto
           ? Colors.amber
           : Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildFlashChoiceWidget() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildFlashOffWidget(),
+                _buildFlashAutoWidget(),
+                _buildFlashOnWidget(),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
