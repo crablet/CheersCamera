@@ -253,7 +253,6 @@ class _CameraScreenState extends State<CameraScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildFlashTorchWidget(),
                       _buildFlashOffWidget(),
                       _buildFlashAutoWidget(),
                       _buildFlashOnWidget(),
@@ -604,23 +603,6 @@ class _CameraScreenState extends State<CameraScreen>
             style: const TextStyle(color: Colors.black),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildFlashTorchWidget() {
-    return InkWell(
-      onTap: () async {
-        setState(() {
-          _currentFlashMode = FlashMode.torch;
-        });
-        await controller!.setFlashMode(FlashMode.torch);
-      },
-      child: Icon(
-        Icons.highlight,
-        color: _currentFlashMode == FlashMode.torch
-          ? Colors.amber
-          : Colors.white,
       ),
     );
   }
