@@ -51,6 +51,7 @@ class _CameraScreenState extends State<CameraScreen>
   double _maxAvailableZoom = 1.0;
 
   bool _showFlashChoiceWidget = false;
+  bool _showChangeExposureWidget = false;
 
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
@@ -221,8 +222,6 @@ class _CameraScreenState extends State<CameraScreen>
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _buildSelectPickImagePositionWidget(),
-                    _buildShowExposureOffsetWidget(),
-                    _buildChangeExposureOffsetWidget(),
                     Row(
                       children: [
                         _buildShowZoomLevelWidget(),
@@ -254,7 +253,8 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildToolBoxDetailWidget() {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      child: _showFlashChoiceWidget ? _buildFlashChoiceWidget() : Container()
+      child: _showFlashChoiceWidget ? _buildFlashChoiceWidget() :
+             _showChangeExposureWidget ? _buildChangeExposureWidget() : Container()
     );
   }
 
@@ -273,6 +273,16 @@ class _CameraScreenState extends State<CameraScreen>
                   onTap: () {
                     setState(() {
                       _showFlashChoiceWidget = !_showFlashChoiceWidget;
+                      _showChangeExposureWidget = false;
+                    });
+                  },
+                ),
+                InkWell(
+                  child: const Icon(Icons.exposure, color: Colors.white),
+                  onTap: () {
+                    setState(() {
+                      _showChangeExposureWidget = !_showChangeExposureWidget;
+                      _showFlashChoiceWidget = false;
                     });
                   },
                 ),
@@ -583,23 +593,20 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildChangeExposureOffsetWidget() {
     return Expanded(
-      child: RotatedBox(
-        quarterTurns: 3,
-        child: SizedBox(
-          height: 30,
-          child: Slider(
-            value: _currentExposureOffset,
-            min: _minAvailableExposureOffset,
-            max: _maxAvailableExposureOffset,
-            activeColor: Colors.white,
-            inactiveColor: Colors.white30,
-            onChanged: (value) async {
-              setState(() {
-                _currentExposureOffset = value;
-              });
-              await controller!.setExposureOffset(value);
-            },
-          ),
+      child: SizedBox(
+        width: 30,
+        child: Slider(
+          value: _currentExposureOffset,
+          min: _minAvailableExposureOffset,
+          max: _maxAvailableExposureOffset,
+          activeColor: Colors.white,
+          inactiveColor: Colors.white30,
+          onChanged: (value) async {
+            setState(() {
+              _currentExposureOffset = value;
+            });
+            await controller!.setExposureOffset(value);
+          },
         ),
       )
     );
@@ -701,6 +708,26 @@ class _CameraScreenState extends State<CameraScreen>
         color: _currentFlashMode == FlashMode.off
           ? Colors.amber
           : Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildChangeExposureWidget() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildShowExposureOffsetWidget(),
+                _buildChangeExposureOffsetWidget(),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
