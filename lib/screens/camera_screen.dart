@@ -52,6 +52,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   bool _showFlashChoiceWidget = false;
   bool _showChangeExposureWidget = false;
+  bool _showSelectPickImagePositionWidget = false;
 
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
@@ -65,12 +66,6 @@ class _CameraScreenState extends State<CameraScreen>
 
   List<File> allFileList = [];
 
-  final List<PickImageWidgetPosition> _pickImageWidgetPositionList = [
-    PickImageWidgetPosition.left,
-    PickImageWidgetPosition.right,
-    PickImageWidgetPosition.top,
-    PickImageWidgetPosition.bottom,
-  ];
   PickImageWidgetPosition _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
 
   Future<XFile?> _takePicture() async {
@@ -220,8 +215,8 @@ class _CameraScreenState extends State<CameraScreen>
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    _buildSelectPickImagePositionWidget(),
                     Row(
                       children: [
                         _buildShowZoomLevelWidget(),
@@ -254,7 +249,9 @@ class _CameraScreenState extends State<CameraScreen>
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: _showFlashChoiceWidget ? _buildFlashChoiceWidget() :
-             _showChangeExposureWidget ? _buildChangeExposureWidget() : Container()
+             _showChangeExposureWidget ? _buildChangeExposureWidget() :
+             _showSelectPickImagePositionWidget ? _buildSelectPickImagePositionWidget()
+             : Container()
     );
   }
 
@@ -274,6 +271,17 @@ class _CameraScreenState extends State<CameraScreen>
                     setState(() {
                       _showFlashChoiceWidget = !_showFlashChoiceWidget;
                       _showChangeExposureWidget = false;
+                      _showSelectPickImagePositionWidget = false;
+                    });
+                  },
+                ),
+                InkWell(
+                  child: _positionEnumToIcon(_currentPickImageWidgetPosition),
+                  onTap: () {
+                    setState(() {
+                      _showSelectPickImagePositionWidget = !_showSelectPickImagePositionWidget;
+                      _showChangeExposureWidget = false;
+                      _showFlashChoiceWidget = false;
                     });
                   },
                 ),
@@ -283,6 +291,7 @@ class _CameraScreenState extends State<CameraScreen>
                     setState(() {
                       _showChangeExposureWidget = !_showChangeExposureWidget;
                       _showFlashChoiceWidget = false;
+                      _showSelectPickImagePositionWidget = false;
                     });
                   },
                 ),
@@ -531,37 +540,87 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Widget _buildSelectPickImagePositionWidget() {
-    return Align(
-      alignment: Alignment.topRight,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: 8.0,
-            right: 8.0,
-          ),
-          child: DropdownButton<PickImageWidgetPosition>(
-            dropdownColor: Colors.black87,
-            underline: Container(),
-            value: _currentPickImageWidgetPosition,
-            items: [
-              for (var position in _pickImageWidgetPositionList)
-                DropdownMenuItem(
-                  child: _positionEnumToIcon(position),
-                  value: position,
-                )
-            ],
-            onChanged: (value) {
-              setState(() {
-                _currentPickImageWidgetPosition = value!;
-              });
-            },
-            hint: const Text("Select pick image widget position"),
-          ),
-        ),
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildPositionLeftWidget(),
+                _buildPositionRightWidget(),
+                _buildPositionTopWidget(),
+                _buildPositionBottomWidget(),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPositionLeftWidget() {
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
+        });
+      },
+      child: Icon(
+        Icons.align_horizontal_left,
+        color: _currentPickImageWidgetPosition == PickImageWidgetPosition.left
+            ? Colors.amber
+            : Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildPositionRightWidget() {
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          _currentPickImageWidgetPosition = PickImageWidgetPosition.right;
+        });
+      },
+      child: Icon(
+        Icons.align_horizontal_right,
+        color: _currentPickImageWidgetPosition == PickImageWidgetPosition.right
+            ? Colors.amber
+            : Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildPositionTopWidget() {
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          _currentPickImageWidgetPosition = PickImageWidgetPosition.top;
+        });
+      },
+      child: Icon(
+        Icons.align_vertical_top,
+        color: _currentPickImageWidgetPosition == PickImageWidgetPosition.top
+            ? Colors.amber
+            : Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildPositionBottomWidget() {
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          _currentPickImageWidgetPosition = PickImageWidgetPosition.bottom;
+        });
+      },
+      child: Icon(
+        Icons.align_vertical_bottom,
+        color: _currentPickImageWidgetPosition == PickImageWidgetPosition.bottom
+            ? Colors.amber
+            : Colors.white,
       ),
     );
   }
