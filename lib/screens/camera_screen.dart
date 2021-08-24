@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:image/image.dart' as image;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:path_provider/path_provider.dart';
 
 enum PickImageWidgetPosition {
@@ -792,10 +793,10 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Widget _buildLoadingCamera() {
-    return const Center(
-      child: Text(
-        "LOADING",
-        style: TextStyle(color: Colors.white),
+    return Center(
+      child: LoadingAnimationWidget.threeRotatingDots(
+          color: Colors.white,
+          size: 53
       ),
     );
   }
