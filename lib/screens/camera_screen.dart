@@ -673,7 +673,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildShowExposureOffsetWidget() {
     return Padding(
-      padding: const EdgeInsets.only(right: 8.0, top: 16.0),
+      padding: const EdgeInsets.only(left: 5.3, right: 5.3),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -779,7 +779,7 @@ class _CameraScreenState extends State<CameraScreen>
           Padding(
             padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 _buildShowExposureOffsetWidget(),
                 _buildChangeExposureOffsetWidget(),
