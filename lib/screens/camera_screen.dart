@@ -385,7 +385,7 @@ class _CameraScreenState extends State<CameraScreen>
             final directory = await getApplicationDocumentsDirectory();
             final croppedFileName = "{$currentUnix}_cropped.png";
             final file = await File("${directory.path}/$croppedFileName").create();
-            file.writeAsBytesSync(croppedImage);
+            await file.writeAsBytes(croppedImage);
             await ImageGallerySaver.saveFile(file.path, name: croppedFileName);
 
             final imageFromCamera = image.decodeImage(_imageFile!.readAsBytesSync());
@@ -449,7 +449,7 @@ class _CameraScreenState extends State<CameraScreen>
               }
 
               final newFile = await File("${directory.path}/new_{$croppedFileName}").create();
-              newFile.writeAsBytesSync(image.encodePng(mergedImage));
+              await newFile.writeAsBytes(image.encodePng(mergedImage));
               await ImageGallerySaver.saveFile(newFile.path, name: "new_{$croppedFileName}");
             }
           }
