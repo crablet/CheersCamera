@@ -378,82 +378,7 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildMergePictureWidget() {
     return InkWell(
       onTap: () async {
-        if (_hasSelectedPicture) {
-          final croppedImage = await ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
-          if (croppedImage != null) {
-            int currentUnix = DateTime.now().microsecondsSinceEpoch;
-            final directory = await getApplicationDocumentsDirectory();
-            final croppedFileName = "{$currentUnix}_cropped.png";
-            final file = await File("${directory.path}/$croppedFileName").create();
-            await file.writeAsBytes(croppedImage);
-            await ImageGallerySaver.saveFile(file.path, name: croppedFileName);
-
-            final imageFromCamera = image.decodeImage(_imageFile!.readAsBytesSync());
-            final imageFromSelected = image.decodeImage(file.readAsBytesSync());
-            if (imageFromCamera != null && imageFromSelected != null) {
-              final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height);
-              image.copyInto(mergedImage, imageFromCamera, blend: true);
-              switch (_currentPickImageWidgetPosition) {
-                case PickImageWidgetPosition.left:
-                  final imageFromSelectedResized = image.copyResize(
-                        imageFromSelected,
-                        width: imageFromCamera.width ~/ 2,
-                        height: imageFromCamera.height
-                    );
-                  image.copyInto(
-                      mergedImage,
-                      imageFromSelectedResized,
-                      dstX: 0,
-                      blend: true
-                  );
-                  break;
-                case PickImageWidgetPosition.right:
-                  final imageFromSelectedResized = image.copyResize(
-                        imageFromSelected,
-                        width: imageFromCamera.width ~/ 2,
-                        height: imageFromCamera.height
-                    );
-                  image.copyInto(
-                      mergedImage,
-                      imageFromSelectedResized,
-                      dstX: imageFromCamera.width ~/ 2,
-                      blend: true
-                  );
-                  break;
-                case PickImageWidgetPosition.top:
-                  final imageFromSelectedResized = image.copyResize(
-                        imageFromSelected,
-                        width: imageFromCamera.width,
-                        height: imageFromCamera.height ~/ 2
-                    );
-                  image.copyInto(
-                      mergedImage,
-                      imageFromSelectedResized,
-                      dstY: 0,
-                      blend: true
-                  );
-                  break;
-                case PickImageWidgetPosition.bottom:
-                  final imageFromSelectedResized = image.copyResize(
-                        imageFromSelected,
-                        width: imageFromCamera.width,
-                        height: imageFromCamera.height ~/ 2
-                    );
-                  image.copyInto(
-                      mergedImage,
-                      imageFromSelectedResized,
-                      dstY: imageFromCamera.height ~/ 2,
-                      blend: true
-                  );
-                  break;
-              }
-
-              final newFile = await File("${directory.path}/new_{$croppedFileName}").create();
-              await newFile.writeAsBytes(image.encodePng(mergedImage));
-              await ImageGallerySaver.saveFile(newFile.path, name: "new_{$croppedFileName}");
-            }
-          }
-        }
+        await _mergeImage();
       },
       child: Stack(
         alignment: Alignment.center,
@@ -472,6 +397,85 @@ class _CameraScreenState extends State<CameraScreen>
         ],
       ),
     );
+  }
+
+  Future<void> _mergeImage() async {
+    if (_hasSelectedPicture) {
+      final croppedImage = await ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
+      if (croppedImage != null) {
+        int currentUnix = DateTime.now().microsecondsSinceEpoch;
+        final directory = await getApplicationDocumentsDirectory();
+        final croppedFileName = "{$currentUnix}_cropped.png";
+        final file = await File("${directory.path}/$croppedFileName").create();
+        await file.writeAsBytes(croppedImage);
+        await ImageGallerySaver.saveFile(file.path, name: croppedFileName);
+
+        final imageFromCamera = image.decodeImage(_imageFile!.readAsBytesSync());
+        final imageFromSelected = image.decodeImage(file.readAsBytesSync());
+        if (imageFromCamera != null && imageFromSelected != null) {
+          final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height);
+          image.copyInto(mergedImage, imageFromCamera, blend: true);
+          switch (_currentPickImageWidgetPosition) {
+            case PickImageWidgetPosition.left:
+              final imageFromSelectedResized = image.copyResize(
+                  imageFromSelected,
+                  width: imageFromCamera.width ~/ 2,
+                  height: imageFromCamera.height
+              );
+              image.copyInto(
+                  mergedImage,
+                  imageFromSelectedResized,
+                  dstX: 0,
+                  blend: true
+              );
+              break;
+            case PickImageWidgetPosition.right:
+              final imageFromSelectedResized = image.copyResize(
+                  imageFromSelected,
+                  width: imageFromCamera.width ~/ 2,
+                  height: imageFromCamera.height
+              );
+              image.copyInto(
+                  mergedImage,
+                  imageFromSelectedResized,
+                  dstX: imageFromCamera.width ~/ 2,
+                  blend: true
+              );
+              break;
+            case PickImageWidgetPosition.top:
+              final imageFromSelectedResized = image.copyResize(
+                  imageFromSelected,
+                  width: imageFromCamera.width,
+                  height: imageFromCamera.height ~/ 2
+              );
+              image.copyInto(
+                  mergedImage,
+                  imageFromSelectedResized,
+                  dstY: 0,
+                  blend: true
+              );
+              break;
+            case PickImageWidgetPosition.bottom:
+              final imageFromSelectedResized = image.copyResize(
+                  imageFromSelected,
+                  width: imageFromCamera.width,
+                  height: imageFromCamera.height ~/ 2
+              );
+              image.copyInto(
+                  mergedImage,
+                  imageFromSelectedResized,
+                  dstY: imageFromCamera.height ~/ 2,
+                  blend: true
+              );
+              break;
+          }
+
+          final newFile = await File("${directory.path}/new_{$croppedFileName}").create();
+          await newFile.writeAsBytes(image.encodePng(mergedImage));
+          await ImageGallerySaver.saveFile(newFile.path, name: "new_{$croppedFileName}");
+        }
+      }
+    }
   }
 
   Widget _buildSelectRearCameraWidget() {
