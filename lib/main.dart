@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:cheers_camera/screens/camera_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 List<CameraDescription> cameras = [];
@@ -29,6 +30,7 @@ class CheersCamera extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: const CameraScreen(),
+      builder: EasyLoading.init(),
     );
   }
 }

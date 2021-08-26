@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cheers_camera/main.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image/image.dart' as image;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
@@ -401,6 +402,8 @@ class _CameraScreenState extends State<CameraScreen>
 
   Future<void> _mergeImage() async {
     if (_hasSelectedPicture) {
+      EasyLoading.show();
+
       final croppedImage = await ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
       if (croppedImage != null) {
         int currentUnix = DateTime.now().microsecondsSinceEpoch;
@@ -473,6 +476,8 @@ class _CameraScreenState extends State<CameraScreen>
           final newFile = await File("${directory.path}/new_{$croppedFileName}").create();
           await newFile.writeAsBytes(image.encodePng(mergedImage));
           await ImageGallerySaver.saveFile(newFile.path, name: "new_{$croppedFileName}");
+
+          EasyLoading.dismiss();
         }
       }
     }
