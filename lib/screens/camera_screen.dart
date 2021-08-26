@@ -278,7 +278,13 @@ class _CameraScreenState extends State<CameraScreen>
                   },
                 ),
                 InkWell(
-                  child: _positionEnumToIcon(_currentPickImageWidgetPosition),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 2 * 2 * 53),
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return ScaleTransition(child: child, scale: animation);
+                    },
+                    child: _buildCurrentPositionIcon(),
+                  ),
                   onTap: () {
                     setState(() {
                       _showSelectPickImagePositionWidget = !_showSelectPickImagePositionWidget;
@@ -635,29 +641,15 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
-  Widget _positionEnumToIcon(PickImageWidgetPosition position) {
-    switch (position) {
-      case PickImageWidgetPosition.left:
-        return const Icon(
-          Icons.align_horizontal_left,
-          color: Colors.white,
-        );
-      case PickImageWidgetPosition.right:
-        return const Icon(
-          Icons.align_horizontal_right,
-          color: Colors.white,
-        );
-      case PickImageWidgetPosition.top:
-        return const Icon(
-          Icons.align_vertical_top,
-          color: Colors.white,
-        );
-      case PickImageWidgetPosition.bottom:
-        return const Icon(
-          Icons.align_vertical_bottom,
-          color: Colors.white,
-        );
-    }
+  Widget _buildCurrentPositionIcon() {
+    return Icon(
+      _currentPickImageWidgetPosition == PickImageWidgetPosition.left ? Icons.align_horizontal_left :
+      _currentPickImageWidgetPosition == PickImageWidgetPosition.right ? Icons.align_horizontal_right :
+      _currentPickImageWidgetPosition == PickImageWidgetPosition.top ? Icons.align_vertical_top :
+      _currentPickImageWidgetPosition == PickImageWidgetPosition.bottom ? Icons.align_vertical_bottom : Icons.error,
+      color: Colors.white,
+      key: ValueKey<PickImageWidgetPosition>(_currentPickImageWidgetPosition),
+    );
   }
 
   Widget _buildChangeExposureOffsetWidget() {
