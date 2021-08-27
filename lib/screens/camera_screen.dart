@@ -391,7 +391,9 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildMergePictureWidget() {
     return InkWell(
       onTap: () async {
+        EasyLoading.show();
         await _mergeImage();
+        EasyLoading.dismiss();
       },
       child: Stack(
         alignment: Alignment.center,
@@ -414,19 +416,16 @@ class _CameraScreenState extends State<CameraScreen>
 
   Future<void> _mergeImage() async {
     if (_hasSelectedPicture) {
-      EasyLoading.show();
-
       final croppedImage = await ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
       if (croppedImage != null) {
         int currentUnix = DateTime.now().microsecondsSinceEpoch;
         final directory = await getApplicationDocumentsDirectory();
         final croppedFileName = "{$currentUnix}_cropped.png";
-        final file = await File("${directory.path}/$croppedFileName").create();
+        final file = File("${directory.path}/$croppedFileName");
         await file.writeAsBytes(croppedImage);
-        await ImageGallerySaver.saveFile(file.path, name: croppedFileName);
 
-        final imageFromCamera = image.decodeImage(_imageFile!.readAsBytesSync());
-        final imageFromSelected = image.decodeImage(file.readAsBytesSync());
+        final imageFromCamera = image.decodeImage(await _imageFile!.readAsBytes());
+        final imageFromSelected = image.decodeImage(await file.readAsBytes());
         if (imageFromCamera != null && imageFromSelected != null) {
           final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height);
           image.copyInto(mergedImage, imageFromCamera, blend: true);
@@ -485,11 +484,9 @@ class _CameraScreenState extends State<CameraScreen>
               break;
           }
 
-          final newFile = await File("${directory.path}/new_{$croppedFileName}").create();
+          final newFile = File("${directory.path}/new_{$croppedFileName}");
           await newFile.writeAsBytes(image.encodePng(mergedImage));
           await ImageGallerySaver.saveFile(newFile.path, name: "new_{$croppedFileName}");
-
-          EasyLoading.dismiss();
         }
       }
     }
