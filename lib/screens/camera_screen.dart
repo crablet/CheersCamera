@@ -64,7 +64,7 @@ class _CameraScreenState extends State<CameraScreen>
   double _baseScale = 1.0;
   double _currentZoomLevel = 1.0;
   double _currentExposureOffset = 0.0;
-  FlashMode? _currentFlashMode;
+  FlashMode _currentFlashMode = FlashMode.auto;
 
   List<File> allFileList = [];
 
@@ -268,7 +268,13 @@ class _CameraScreenState extends State<CameraScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
-                  child: _buildCurrentFlashModeIcon(),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 2 * 2 * 53),
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return ScaleTransition(child: child, scale: animation);
+                    },
+                    child: _buildCurrentFlashModeIcon(),
+                  ),
                   onTap: () {
                     setState(() {
                       _showFlashChoiceWidget = !_showFlashChoiceWidget;
@@ -693,12 +699,13 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Widget _buildCurrentFlashModeIcon() {
-    switch (_currentFlashMode) {
-      case FlashMode.always: return const Icon(Icons.flash_on, color: Colors.white);
-      case FlashMode.auto: return const Icon(Icons.flash_auto, color: Colors.white);
-      case FlashMode.off: return const Icon(Icons.flash_off, color: Colors.white);
-      default: return Container();
-    }
+    return Icon(
+      _currentFlashMode == FlashMode.always ? Icons.flash_on :
+      _currentFlashMode == FlashMode.auto ? Icons.flash_auto :
+      _currentFlashMode == FlashMode.off ? Icons.flash_off : Icons.error,
+      color: Colors.white,
+      key: ValueKey<FlashMode>(_currentFlashMode),
+    );
   }
 
   Widget _buildFlashOnWidget() {
