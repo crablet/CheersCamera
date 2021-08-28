@@ -421,9 +421,6 @@ class _CameraScreenState extends State<CameraScreen>
             );
 
             if (mergedImage != null) {
-              int currentUnix = DateTime.now().microsecondsSinceEpoch;
-              final directory = await getApplicationDocumentsDirectory();
-              final croppedFileName = "{$currentUnix}_cropped.png";
               final newFile = File("${directory.path}/new_{$croppedFileName}");
               await newFile.writeAsBytes(mergedImage);
               await ImageGallerySaver.saveFile(newFile.path, name: "new_{$croppedFileName}");
