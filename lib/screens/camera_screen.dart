@@ -13,7 +13,6 @@ import 'package:image/image.dart' as image;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:path_provider/path_provider.dart';
 
 enum PickImageWidgetPosition {
   left,
@@ -147,7 +146,6 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   void refreshAlreadyCapturedImages() async {
-    final directory = await getApplicationDocumentsDirectory();
     List<FileSystemEntity> fileList = await directory.list().toList();
     allFileList.clear();
     List<Map<int, dynamic>> fileNames = [];
@@ -371,7 +369,6 @@ class _CameraScreenState extends State<CameraScreen>
         debugPrint(fileFormat);
 
         int currentUnix = DateTime.now().microsecondsSinceEpoch;
-        final directory = await getApplicationDocumentsDirectory();
         final fileName = "$currentUnix.$fileFormat";  // 目前暂定为"时间戳.后缀"的命名，后续会改
         await imageFile.copy("${directory.path}/$fileName");
         await ImageGallerySaver.saveFile(imageFile.path, name: fileName); // 保存到相册中
@@ -416,7 +413,6 @@ class _CameraScreenState extends State<CameraScreen>
 
             if (mergedImage != null) {
               final currentUnix = DateTime.now().microsecondsSinceEpoch;
-              final directory = await getApplicationDocumentsDirectory();
               final croppedFileName = "{$currentUnix}_cropped.png";
               final newFile = File("${directory.path}/new_{$croppedFileName}");
               await newFile.writeAsBytes(mergedImage);
