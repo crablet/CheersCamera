@@ -23,8 +23,8 @@ enum PickImageWidgetPosition {
 }
 
 class MergeImageParam {
-  final File imageFromSelect;
-  final File imageFromCamera;
+  final List<int> imageFromSelect;
+  final List<int> imageFromCamera;
   final PickImageWidgetPosition currentPickImageWidgetPosition;
 
   MergeImageParam(
@@ -408,19 +408,16 @@ class _CameraScreenState extends State<CameraScreen>
 
         final croppedImage = await ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
         if (croppedImage != null) {
-          int currentUnix = DateTime.now().microsecondsSinceEpoch;
-          final directory = await getApplicationDocumentsDirectory();
-          final croppedFileName = "{$currentUnix}_cropped.png";
-          final file = File("${directory.path}/$croppedFileName");
-          await file.writeAsBytes(croppedImage);
-
           if (_hasSelectedPicture) {
             final mergedImage = await compute(
                 _mergeImage,
-                MergeImageParam(file, _imageFile!, _currentPickImageWidgetPosition)
+                MergeImageParam(croppedImage, _imageFile!.readAsBytesSync(), _currentPickImageWidgetPosition)
             );
 
             if (mergedImage != null) {
+              final currentUnix = DateTime.now().microsecondsSinceEpoch;
+              final directory = await getApplicationDocumentsDirectory();
+              final croppedFileName = "{$currentUnix}_cropped.png";
               final newFile = File("${directory.path}/new_{$croppedFileName}");
               await newFile.writeAsBytes(mergedImage);
               await ImageGallerySaver.saveFile(newFile.path, name: "new_{$croppedFileName}");
@@ -450,8 +447,8 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   static _mergeImage(MergeImageParam param) async {
-    final imageFromCamera = image.decodeImage(param.imageFromCamera.readAsBytesSync());
-    final imageFromSelected = image.decodeImage(param.imageFromSelect.readAsBytesSync());
+    final imageFromCamera = image.decodeImage(param.imageFromCamera);
+    final imageFromSelected = image.decodeImage(param.imageFromSelect);
     if (imageFromCamera != null && imageFromSelected != null) {
       final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height);
       image.copyInto(mergedImage, imageFromCamera, blend: true);
