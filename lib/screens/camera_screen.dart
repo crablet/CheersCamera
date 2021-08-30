@@ -363,14 +363,13 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildTakePictureWidget() {
     return InkWell(
       onTap: () async {
+        EasyLoading.show();
+
         XFile? rawImage = await _takePicture();
         File imageFile = File(rawImage!.path);
         String fileFormat = imageFile.path.split('.').last;
-        debugPrint(fileFormat);
-
-        int currentUnix = DateTime.now().microsecondsSinceEpoch;
+        final currentUnix = DateTime.now().microsecondsSinceEpoch;
         final fileName = "$currentUnix.$fileFormat";  // 目前暂定为"时间戳.后缀"的命名，后续会改
-        await imageFile.copy("${directory.path}/$fileName");
         await ImageGallerySaver.saveFile(imageFile.path, name: fileName); // 保存到相册中
 
         setState(() {
@@ -378,6 +377,8 @@ class _CameraScreenState extends State<CameraScreen>
         });
 
         refreshAlreadyCapturedImages();
+
+        EasyLoading.dismiss();
       },
       child: Stack(
         alignment: Alignment.center,
