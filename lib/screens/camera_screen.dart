@@ -145,27 +145,6 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  void refreshAlreadyCapturedImages() async {
-    List<FileSystemEntity> fileList = await directory.list().toList();
-    allFileList.clear();
-    List<Map<int, dynamic>> fileNames = [];
-    for (var file in fileList) {
-      if (file.path.contains(".jpg")) {
-        allFileList.add(File(file.path));
-        String name = file.path.split('/').last.split('.').first;
-        fileNames.add({0: int.parse(name), 1: file.path.split('/').last});
-      }
-    }
-
-    if (fileNames.isNotEmpty) {
-      final recentFile = fileNames.reduce((curr, next) => curr[0] > next[0] ? curr : next);
-      String recentFileName = recentFile[1];
-      _imageFile = File("${directory.path}/$recentFileName");
-    }
-
-    setState(() {});
-  }
-
   void resetCameraValues() async {
     _currentZoomLevel = 1.0;
     _currentExposureOffset = 0.0;
@@ -177,7 +156,6 @@ class _CameraScreenState extends State<CameraScreen>
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     // 初始化相机
     onNewCameraSelected(cameras.first);
-    refreshAlreadyCapturedImages();
     super.initState();
   }
 
@@ -223,7 +201,8 @@ class _CameraScreenState extends State<CameraScreen>
             children: [
               _buildCameraPreviewWidget(),
               _buildSelectPictureWidget(),
-              if (_hasTakenPicture) _buildCropCameraImageWidget(),
+              if (_hasTakenPicture && _imageFile != null)
+                _buildCropCameraImageWidget(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
@@ -366,17 +345,15 @@ class _CameraScreenState extends State<CameraScreen>
         EasyLoading.show();
 
         XFile? rawImage = await _takePicture();
-        File imageFile = File(rawImage!.path);
-        String fileFormat = imageFile.path.split('.').last;
+        _imageFile = File(rawImage!.path);
+        String fileFormat = _imageFile!.path.split('.').last;
         final currentUnix = DateTime.now().microsecondsSinceEpoch;
         final fileName = "$currentUnix.$fileFormat";  // 目前暂定为"时间戳.后缀"的命名，后续会改
-        await ImageGallerySaver.saveFile(imageFile.path, name: fileName); // 保存到相册中
+        await ImageGallerySaver.saveFile(_imageFile!.path, name: fileName); // 保存到相册中
 
         setState(() {
           _hasTakenPicture = true;
         });
-
-        refreshAlreadyCapturedImages();
 
         EasyLoading.dismiss();
       },
