@@ -381,23 +381,24 @@ class _CameraScreenState extends State<CameraScreen>
       onTap: () async {
         EasyLoading.show();
 
-        final croppedImage = await ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
-        if (croppedImage != null) {
-          if (_hasSelectedPicture) {
-            final mergedImage = await compute(
-                _mergeImage,
-                MergeImageParam(croppedImage, _imageFile!.readAsBytesSync(), _currentPickImageWidgetPosition)
-            );
+        final croppedImageFromSelect =
+          await ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
+        final croppedImageFromCamera =
+          await ImageCropper.crop(cropperKey: _cropperKeyForTakePictureWidget);
+        if (croppedImageFromSelect != null && croppedImageFromCamera != null) {
+          final mergedImage = await compute(
+              _mergeImage,
+              MergeImageParam(croppedImageFromSelect, croppedImageFromCamera, _currentPickImageWidgetPosition)
+          );
 
-            if (mergedImage != null) {
-              final currentUnix = DateTime.now().microsecondsSinceEpoch;
-              final croppedFileName = "{$currentUnix}_cropped.png";
-              await ImageGallerySaver.saveImage(
-                  mergedImage,
-                  quality: 100,
-                  name: "new_{$croppedFileName}"
-              );
-            }
+          if (mergedImage != null) {
+            final currentUnix = DateTime.now().microsecondsSinceEpoch;
+            final croppedFileName = "{$currentUnix}_cropped.png";
+            await ImageGallerySaver.saveImage(
+                mergedImage,
+                quality: 100,
+                name: "new_{$croppedFileName}"
+            );
           }
         }
 
@@ -426,64 +427,51 @@ class _CameraScreenState extends State<CameraScreen>
     final imageFromCamera = image.decodeImage(param.imageFromCamera);
     final imageFromSelected = image.decodeImage(param.imageFromSelect);
     if (imageFromCamera != null && imageFromSelected != null) {
-      final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height);
-      image.copyInto(mergedImage, imageFromCamera, blend: true);
       switch (param.currentPickImageWidgetPosition) {
         case PickImageWidgetPosition.left:
-          final imageFromSelectedResized = image.copyResize(
-              imageFromSelected,
-              width: imageFromCamera.width ~/ 2,
-              height: imageFromCamera.height
-          );
+          final mergedImage = image.Image(imageFromCamera.width * 2, imageFromCamera.height);
+          image.copyInto(mergedImage, imageFromSelected, blend: false);
           image.copyInto(
               mergedImage,
-              imageFromSelectedResized,
-              dstX: 0,
-              blend: true
+              imageFromCamera,
+              dstX: imageFromSelected.width,
+              blend: false
           );
-          break;
-        case PickImageWidgetPosition.right:
-          final imageFromSelectedResized = image.copyResize(
-              imageFromSelected,
-              width: imageFromCamera.width ~/ 2,
-              height: imageFromCamera.height
-          );
-          image.copyInto(
-              mergedImage,
-              imageFromSelectedResized,
-              dstX: imageFromCamera.width ~/ 2,
-              blend: true
-          );
-          break;
-        case PickImageWidgetPosition.top:
-          final imageFromSelectedResized = image.copyResize(
-              imageFromSelected,
-              width: imageFromCamera.width,
-              height: imageFromCamera.height ~/ 2
-          );
-          image.copyInto(
-              mergedImage,
-              imageFromSelectedResized,
-              dstY: 0,
-              blend: true
-          );
-          break;
-        case PickImageWidgetPosition.bottom:
-          final imageFromSelectedResized = image.copyResize(
-              imageFromSelected,
-              width: imageFromCamera.width,
-              height: imageFromCamera.height ~/ 2
-          );
-          image.copyInto(
-              mergedImage,
-              imageFromSelectedResized,
-              dstY: imageFromCamera.height ~/ 2,
-              blend: true
-          );
-          break;
-      }
+          return image.encodePng(mergedImage);
 
-      return image.encodePng(mergedImage);
+        case PickImageWidgetPosition.right:
+          final mergedImage = image.Image(imageFromCamera.width * 2, imageFromCamera.height);
+          image.copyInto(mergedImage, imageFromCamera, blend: false);
+          image.copyInto(
+              mergedImage,
+              imageFromSelected,
+              dstX: imageFromCamera.width,
+              blend: false
+          );
+          return image.encodePng(mergedImage);
+
+        case PickImageWidgetPosition.top:
+          final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height * 2);
+          image.copyInto(mergedImage, imageFromSelected, blend: false);
+          image.copyInto(
+              mergedImage,
+              imageFromCamera,
+              dstY: imageFromSelected.height,
+              blend: false
+          );
+          return image.encodePng(mergedImage);
+
+        case PickImageWidgetPosition.bottom:
+          final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height * 2);
+          image.copyInto(mergedImage, imageFromCamera, blend: false);
+          image.copyInto(
+              mergedImage,
+              imageFromSelected,
+              dstY: imageFromCamera.height,
+              blend: false
+          );
+          return image.encodePng(mergedImage);
+      }
     }
   }
 
