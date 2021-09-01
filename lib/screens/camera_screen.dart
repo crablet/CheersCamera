@@ -79,7 +79,7 @@ class _CameraScreenState extends State<CameraScreen>
   double _currentExposureOffset = 0.0;
   FlashMode _currentFlashMode = FlashMode.auto;
 
-  double _currentPickImageWidgetOpacity = 0.0;
+  double _currentPickImageWidgetOpacity = 1.0;
 
   List<File> allFileList = [];
 
@@ -921,35 +921,38 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Widget _buildSelectPictureWidget() {
-    return SizedBox.expand(
-      child: FractionallySizedBox(
-        alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
-        widthFactor: _positionEnumToWidthFactor(_currentPickImageWidgetPosition),
-        heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
-        child: !_hasSelectedPicture
-          ? Container(
-            color: Colors.black38,
-            child: InkWell(
-              child: const Icon(Icons.add_a_photo, color: Colors.white,),
-              onTap: () async {
-                XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
-                setState(() {
-                  if (file == null) {
-                    _selectedFile = null;
-                    _hasSelectedPicture = false;
-                  } else {
-                    _selectedFile = File(file.path);
-                    _hasSelectedPicture = true;
-                  }
-                });
-              },
-            ),
-          )
-          : ImageCropper(
-              cropperKey: _cropperKeyForSelectPictureWidget,
-              image: Image.file(_selectedFile!)
-          )
-      ),
+    return Opacity(
+      opacity: _currentPickImageWidgetOpacity,
+      child: SizedBox.expand(
+        child: FractionallySizedBox(
+            alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
+            widthFactor: _positionEnumToWidthFactor(_currentPickImageWidgetPosition),
+            heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
+            child: !_hasSelectedPicture
+                ? Container(
+                    color: Colors.black38,
+                    child: InkWell(
+                      child: const Icon(Icons.add_a_photo, color: Colors.white,),
+                      onTap: () async {
+                        XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+                        setState(() {
+                          if (file == null) {
+                            _selectedFile = null;
+                            _hasSelectedPicture = false;
+                          } else {
+                            _selectedFile = File(file.path);
+                            _hasSelectedPicture = true;
+                          }
+                        });
+                      },
+                    ),
+                )
+                : ImageCropper(
+                    cropperKey: _cropperKeyForSelectPictureWidget,
+                    image: Image.file(_selectedFile!)
+                )
+        ),
+      )
     );
   }
 
