@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:cheers_camera/painters/assistive_grid_painter.dart';
 import 'package:cheers_camera/screens/preview_screen.dart';
 import 'package:cheers_camera/widgets/image_cropper.dart';
 import 'package:flutter/foundation.dart';
@@ -209,6 +210,13 @@ class _CameraScreenState extends State<CameraScreen>
               _buildSelectPictureWidget(),
               if (_hasTakenPicture && _imageFile != null)
                 _buildCropCameraImageWidget(),
+              IgnorePointer(
+                child: SizedBox.expand(
+                  child: CustomPaint(
+                    painter: AssistiveGridPainter(),
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
