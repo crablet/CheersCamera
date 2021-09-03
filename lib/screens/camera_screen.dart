@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:cheers_camera/painters/assistive_grid_painter.dart';
 import 'package:cheers_camera/screens/preview_screen.dart';
 import 'package:cheers_camera/widgets/image_cropper.dart';
+import 'package:cheers_camera/widgets/spirit_level.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -213,6 +214,7 @@ class _CameraScreenState extends State<CameraScreen>
                 _buildCropCameraImageWidget(),
               if (_showAssistiveGridWidget)
                 _buildAssistiveGridWidget(),
+              const SpiritLevel(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
