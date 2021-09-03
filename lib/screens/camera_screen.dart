@@ -72,6 +72,7 @@ class _CameraScreenState extends State<CameraScreen>
   bool _showChangeExposureWidget = false;
   bool _showSelectPickImagePositionWidget = false;
   // bool _showChangePickImageOpacityWidget = false;
+  bool _showAssistiveGridWidget = false;
 
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
@@ -210,13 +211,8 @@ class _CameraScreenState extends State<CameraScreen>
               _buildSelectPictureWidget(),
               if (_hasTakenPicture && _imageFile != null)
                 _buildCropCameraImageWidget(),
-              IgnorePointer(
-                child: SizedBox.expand(
-                  child: CustomPaint(
-                    painter: AssistiveGridPainter(),
-                  ),
-                ),
-              ),
+              if (_showAssistiveGridWidget)
+                _buildAssistiveGridWidget(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
@@ -248,6 +244,16 @@ class _CameraScreenState extends State<CameraScreen>
         _buildToolboxWidget(),
         _buildToolBoxDetailWidget(),
       ],
+    );
+  }
+
+  Widget _buildAssistiveGridWidget() {
+    return IgnorePointer(
+      child: SizedBox.expand(
+        child: CustomPaint(
+          painter: AssistiveGridPainter(),
+        ),
+      ),
     );
   }
 
