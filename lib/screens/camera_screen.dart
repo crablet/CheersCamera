@@ -74,6 +74,7 @@ class _CameraScreenState extends State<CameraScreen>
   bool _showSelectPickImagePositionWidget = false;
   // bool _showChangePickImageOpacityWidget = false;
   bool _showAssistiveGridWidget = false;
+  bool _showSpiritLevelWidget = false;
 
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
@@ -214,7 +215,8 @@ class _CameraScreenState extends State<CameraScreen>
                 _buildCropCameraImageWidget(),
               if (_showAssistiveGridWidget)
                 _buildAssistiveGridWidget(),
-              const SpiritLevel(),
+              if (_showSpiritLevelWidget)
+                const SpiritLevel(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
