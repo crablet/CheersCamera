@@ -14,8 +14,11 @@ class SpiritLevelPainter extends CustomPainter {
       ..color = Colors.white
       ..strokeWidth = 0.53;
 
-    double dy = rect.top + rect.height / 2;
-    canvas.drawLine(Offset(rect.left + 53, dy), Offset(rect.right - 53, dy), paint);
+    final dy = rect.top + rect.height / 2;
+    const circleRadius = 2 * 2 * 5.3;
+    canvas.drawLine(Offset(rect.left + 53, dy), Offset(rect.width / 2 - circleRadius, dy), paint);  // 左半横线
+    canvas.drawLine(Offset(rect.width / 2 + circleRadius, dy), Offset(rect.right - 53, dy), paint); // 右半横线
+    canvas.drawCircle(Offset(rect.width / 2, rect.height / 2), circleRadius, paint);                // 中间圆圈
   }
 
   @override
