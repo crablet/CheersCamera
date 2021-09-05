@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:cheers_camera/painters/assistive_grid_painter.dart';
 import 'package:cheers_camera/screens/preview_screen.dart';
+import 'package:cheers_camera/screens/settings_screen.dart';
 import 'package:cheers_camera/widgets/image_cropper.dart';
 import 'package:cheers_camera/widgets/spirit_level.dart';
 import 'package:flutter/foundation.dart';
@@ -336,6 +337,16 @@ class _CameraScreenState extends State<CameraScreen>
                       _showSelectPickImagePositionWidget = false;
                       // _showChangePickImageOpacityWidget = false;
                     });
+                  },
+                ),
+                InkWell(
+                  child: const Icon(Icons.settings, color: Colors.white),
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const SettingsScreen()
+                        )
+                    );
                   },
                 ),
               ],
