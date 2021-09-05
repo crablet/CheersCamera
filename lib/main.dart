@@ -7,6 +7,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'globals.dart';
+
 List<CameraDescription> cameras = [];
 
 late final Directory directory;
@@ -16,6 +18,8 @@ Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras();
     directory = await getApplicationDocumentsDirectory();
+
+    await App.init();
 
     _requestPermission();
   } on CameraException catch (e) {

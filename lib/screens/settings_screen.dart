@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../globals.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -9,8 +12,9 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
 
-  bool _showAssistiveGridWidget = false;
-  bool _showSpiritLevelWidget = false;
+  final spFuture = SharedPreferences.getInstance();
+  bool _showAssistiveGridWidget = App.sp.getBool("showAssistiveGridWidget") ?? false;
+  bool _showSpiritLevelWidget = App.sp.getBool("showSpiritLevelWidget") ?? false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +39,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SwitchListTile(
                       title: const Text("Assistive Grid"),
                       value: _showAssistiveGridWidget,
-                      onChanged: (bool value) {
+                      onChanged: (bool value) async {
                         setState(() {
                           _showAssistiveGridWidget = value;
                         });
+                        final sp = await spFuture;
+                        sp.setBool("showAssistiveGridWidget", value);
                       },
                       secondary: const Icon(Icons.grid_3x3),
                     ),
@@ -48,10 +54,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SwitchListTile(
                       title: const Text("Spirit Level"),
                       value: _showSpiritLevelWidget,
-                      onChanged: (bool value) {
+                      onChanged: (bool value) async {
                         setState(() {
                           _showSpiritLevelWidget = value;
                         });
+                        final sp = await spFuture;
+                        sp.setBool("showSpiritLevelWidget", value);
                       },
                       secondary: const Icon(Icons.border_horizontal),
                     )

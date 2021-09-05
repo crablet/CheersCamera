@@ -17,6 +17,8 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import '../globals.dart';
+
 enum PickImageWidgetPosition {
   left,
   right,
@@ -74,8 +76,6 @@ class _CameraScreenState extends State<CameraScreen>
   bool _showChangeExposureWidget = false;
   bool _showSelectPickImagePositionWidget = false;
   // bool _showChangePickImageOpacityWidget = false;
-  bool _showAssistiveGridWidget = false;
-  bool _showSpiritLevelWidget = false;
 
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
@@ -214,9 +214,9 @@ class _CameraScreenState extends State<CameraScreen>
               _buildSelectPictureWidget(),
               if (_hasTakenPicture && _imageFile != null)
                 _buildCropCameraImageWidget(),
-              if (_showAssistiveGridWidget)
+              if (App.sp.getBool("showAssistiveGridWidget") ?? false)
                 _buildAssistiveGridWidget(),
-              if (_showSpiritLevelWidget)
+              if (App.sp.getBool("showSpiritLevelWidget") ?? false)
                 const SpiritLevel(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
@@ -346,7 +346,9 @@ class _CameraScreenState extends State<CameraScreen>
                         MaterialPageRoute(
                             builder: (context) => const SettingsScreen()
                         )
-                    );
+                    ).then((res) {
+                      setState(() {});  // 强制刷新状态，后面应该要引入状态管理
+                    });
                   },
                 ),
               ],
