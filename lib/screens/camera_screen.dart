@@ -10,7 +10,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cheers_camera/main.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image/image.dart' as image;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -163,8 +162,6 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void initState() {
-    // 隐藏状态栏
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     // 初始化相机
     onNewCameraSelected(cameras.first);
     super.initState();
@@ -195,7 +192,6 @@ class _CameraScreenState extends State<CameraScreen>
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          backgroundColor: Colors.black,
           body: _isCameraInitialized
             ? _buildLoadedCamera()
             : _buildLoadingCamera(),
@@ -329,7 +325,7 @@ class _CameraScreenState extends State<CameraScreen>
                 //   },
                 // ),
                 InkWell(
-                  child: const Icon(Icons.exposure, color: Colors.white),
+                  child: const Icon(Icons.exposure, color: Colors.grey),
                   onTap: () {
                     setState(() {
                       _showChangeExposureWidget = !_showChangeExposureWidget;
@@ -340,7 +336,7 @@ class _CameraScreenState extends State<CameraScreen>
                   },
                 ),
                 InkWell(
-                  child: const Icon(Icons.settings, color: Colors.white),
+                  child: const Icon(Icons.settings, color: Colors.grey),
                   onTap: () {
                     Navigator.of(context).push(
                         MaterialPageRoute(
@@ -684,8 +680,8 @@ class _CameraScreenState extends State<CameraScreen>
       child: Icon(
         Icons.align_horizontal_left,
         color: _currentPickImageWidgetPosition == PickImageWidgetPosition.left
-            ? Colors.amber
-            : Colors.white,
+            ? const Color(0xffffecb3)
+            : Colors.grey,
       ),
     );
   }
@@ -700,8 +696,8 @@ class _CameraScreenState extends State<CameraScreen>
       child: Icon(
         Icons.align_horizontal_right,
         color: _currentPickImageWidgetPosition == PickImageWidgetPosition.right
-            ? Colors.amber
-            : Colors.white,
+            ? const Color(0xffffecb3)
+            : Colors.grey,
       ),
     );
   }
@@ -716,8 +712,8 @@ class _CameraScreenState extends State<CameraScreen>
       child: Icon(
         Icons.align_vertical_top,
         color: _currentPickImageWidgetPosition == PickImageWidgetPosition.top
-            ? Colors.amber
-            : Colors.white,
+            ? const Color(0xffffecb3)
+            : Colors.grey,
       ),
     );
   }
@@ -732,8 +728,8 @@ class _CameraScreenState extends State<CameraScreen>
       child: Icon(
         Icons.align_vertical_bottom,
         color: _currentPickImageWidgetPosition == PickImageWidgetPosition.bottom
-            ? Colors.amber
-            : Colors.white,
+            ? const Color(0xffffecb3)
+            : Colors.grey,
       ),
     );
   }
@@ -744,7 +740,7 @@ class _CameraScreenState extends State<CameraScreen>
       _currentPickImageWidgetPosition == PickImageWidgetPosition.right ? Icons.align_horizontal_right :
       _currentPickImageWidgetPosition == PickImageWidgetPosition.top ? Icons.align_vertical_top :
       _currentPickImageWidgetPosition == PickImageWidgetPosition.bottom ? Icons.align_vertical_bottom : Icons.error,
-      color: Colors.white,
+      color: Colors.grey,
       key: ValueKey<PickImageWidgetPosition>(_currentPickImageWidgetPosition),
     );
   }
@@ -757,8 +753,6 @@ class _CameraScreenState extends State<CameraScreen>
           value: _currentExposureOffset,
           min: _minAvailableExposureOffset,
           max: _maxAvailableExposureOffset,
-          activeColor: Colors.white,
-          inactiveColor: Colors.white30,
           onChanged: (value) async {
             setState(() {
               _currentExposureOffset = value;
@@ -775,7 +769,7 @@ class _CameraScreenState extends State<CameraScreen>
       padding: const EdgeInsets.only(left: 5.3, right: 5.3),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xffffecb3),
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: Padding(
@@ -794,7 +788,7 @@ class _CameraScreenState extends State<CameraScreen>
       _currentFlashMode == FlashMode.always ? Icons.flash_on :
       _currentFlashMode == FlashMode.auto ? Icons.flash_auto :
       _currentFlashMode == FlashMode.off ? Icons.flash_off : Icons.error,
-      color: Colors.white,
+      color: Colors.grey,
       key: ValueKey<FlashMode>(_currentFlashMode),
     );
   }
@@ -810,8 +804,8 @@ class _CameraScreenState extends State<CameraScreen>
       child: Icon(
         Icons.flash_on,
         color: _currentFlashMode == FlashMode.always
-          ? Colors.amber
-          : Colors.white,
+          ? const Color(0xffffecb3)
+          : Colors.grey,
       ),
     );
   }
@@ -827,8 +821,8 @@ class _CameraScreenState extends State<CameraScreen>
       child: Icon(
         Icons.flash_auto,
         color: _currentFlashMode == FlashMode.auto
-          ? Colors.amber
-          : Colors.white,
+          ? const Color(0xffffecb3)
+          : Colors.grey,
       ),
     );
   }
@@ -865,8 +859,8 @@ class _CameraScreenState extends State<CameraScreen>
       child: Icon(
         Icons.flash_off,
         color: _currentFlashMode == FlashMode.off
-          ? Colors.amber
-          : Colors.white,
+          ? const Color(0xffffecb3)
+          : Colors.grey,
       ),
     );
   }
