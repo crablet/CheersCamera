@@ -956,54 +956,36 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildSelectPictureWidget() {
     return SizedBox.expand(
-      child: Stack(
-        children: [
-          // if (_hasSelectedPicture)
-          //   GestureDetector(
-          //     child: FractionallySizedBox(
-          //       widthFactor: 1,
-          //       heightFactor: 1,
-          //       child: Opacity(
-          //         opacity: _currentPickImageWidgetOpacity,
-          //         child: ImageCropper(
-          //             cropperKey: _cropperKeyForSelectPictureOpacityWidget,
-          //             image: Image.file(_selectedFile!)
-          //         ),
-          //       )
-          //     ),
-          //   ),
-          GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            child: FractionallySizedBox(
-                alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
-                widthFactor: _positionEnumToWidthFactor(_currentPickImageWidgetPosition),
-                heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
-                child: !_hasSelectedPicture
-                    ? Container(
-                      color: Colors.black38,
-                      child: InkWell(
-                        child: const Icon(Icons.add_a_photo, color: Colors.white,),
-                        onTap: () async {
-                          XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
-                          setState(() {
-                            if (file == null) {
-                              _selectedFile = null;
-                              _hasSelectedPicture = false;
-                            } else {
-                              _selectedFile = File(file.path);
-                              _hasSelectedPicture = true;
-                            }
-                          });
-                        },
-                      ),
-                    )
-                    : ImageCropper(
-                        cropperKey: _cropperKeyForSelectPictureWidget,
-                        image: Image.file(_selectedFile!)
-                    )
-            ),
-          ),
-        ],
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        child: FractionallySizedBox(
+            alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
+            widthFactor: _positionEnumToWidthFactor(_currentPickImageWidgetPosition),
+            heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
+            child: !_hasSelectedPicture
+                ? Container(
+                    color: Colors.black38,
+                    child: InkWell(
+                      child: const Icon(Icons.add_a_photo, color: Colors.white,),
+                      onTap: () async {
+                        XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+                        setState(() {
+                          if (file == null) {
+                            _selectedFile = null;
+                            _hasSelectedPicture = false;
+                          } else {
+                            _selectedFile = File(file.path);
+                            _hasSelectedPicture = true;
+                          }
+                        });
+                      },
+                    ),
+                  )
+                : ImageCropper(
+                    cropperKey: _cropperKeyForSelectPictureWidget,
+                    image: Image.file(_selectedFile!)
+            )
+        ),
       ),
     );
   }
