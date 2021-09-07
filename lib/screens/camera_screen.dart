@@ -214,6 +214,8 @@ class _CameraScreenState extends State<CameraScreen>
                 _buildAssistiveGridWidget(),
               if (App.sp.getBool("showSpiritLevelWidget") ?? false)
                 const SpiritLevel(),
+              if (_hasSelectedPicture)
+                _buildReselectImageWidget(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
@@ -977,8 +979,32 @@ class _CameraScreenState extends State<CameraScreen>
                   )
                 : ImageCropper(
                     cropperKey: _cropperKeyForSelectPictureWidget,
-                    image: Image.file(_selectedFile!)
+                    image: Image.file(_selectedFile!),
+                  )
             )
+        ),
+      );
+  }
+
+  Widget _buildReselectImageWidget() {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Container(
+        margin: const EdgeInsets.only(top: 2 * 2 * 5.3, left: 2 * 2 * 5.3),
+        child: InkWell(
+          child: const Icon(Icons.undo),
+          onTap: () async {
+            XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+            setState(() {
+              if (file == null) {
+                _selectedFile = null;
+                _hasSelectedPicture = false;
+              } else {
+                _selectedFile = File(file.path);
+                _hasSelectedPicture = true;
+              }
+            });
+          },
         ),
       ),
     );
