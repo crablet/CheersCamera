@@ -977,13 +977,26 @@ class _CameraScreenState extends State<CameraScreen>
                       },
                     ),
                   )
-                : ImageCropper(
-                    cropperKey: _cropperKeyForSelectPictureWidget,
-                    image: Image.file(_selectedFile!),
-                  )
+                : LongPressDraggable(
+                    child: ImageCropper(
+                      cropperKey: _cropperKeyForSelectPictureWidget,
+                      image: Image.file(_selectedFile!),
+                    ),
+                    feedback: _buildThumbnailOfImage(_selectedFile!),
+                ),
             )
         ),
       );
+  }
+
+  Widget _buildThumbnailOfImage(File file) {
+    return Opacity(
+      opacity: 0.53,
+      child: Image.file(
+        file,
+        scale: 2 * 5.3,
+      ),
+    );
   }
 
   Widget _buildReselectImageWidget() {
