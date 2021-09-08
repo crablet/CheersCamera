@@ -977,15 +977,38 @@ class _CameraScreenState extends State<CameraScreen>
                       },
                     ),
                   )
-                : LongPressDraggable(
-                    child: ImageCropper(
-                      cropperKey: _cropperKeyForSelectPictureWidget,
-                      image: Image.file(_selectedFile!),
-                    ),
-                    feedback: _buildThumbnailOfImage(_selectedFile!),
+                : DragTarget<PickImageWidgetPosition>(
+                    builder: (context, candidateData, rejectedData) {
+                      return LongPressDraggable<PickImageWidgetPosition>(
+                        child: ImageCropper(
+                          cropperKey: _cropperKeyForSelectPictureWidget,
+                          image: Image.file(_selectedFile!),
+                        ),
+                        feedback: _buildThumbnailOfImage(_selectedFile!),
+                        data: _currentPickImageWidgetPosition,
+                      );
+                    },
+                    onAccept: (data) {
+                      setState(() {
+                        switch (_currentPickImageWidgetPosition) {
+                          case PickImageWidgetPosition.left:
+                            _currentPickImageWidgetPosition = PickImageWidgetPosition.right;
+                            break;
+                          case PickImageWidgetPosition.right:
+                            _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
+                            break;
+                          case PickImageWidgetPosition.top:
+                            _currentPickImageWidgetPosition = PickImageWidgetPosition.bottom;
+                            break;
+                          case PickImageWidgetPosition.bottom:
+                            _currentPickImageWidgetPosition = PickImageWidgetPosition.top;
+                            break;
+                        }
+                      });
+                    },
+                  )
                 ),
             )
-        ),
       );
   }
 
@@ -1029,9 +1052,35 @@ class _CameraScreenState extends State<CameraScreen>
         alignment: _positionEnumToCropCameraImageAlignment(_currentPickImageWidgetPosition),
         widthFactor: _positionEnumToCropCameraImageWidthFactor(_currentPickImageWidgetPosition),
         heightFactor: _positionEnumToCropCameraImageHeightFactor(_currentPickImageWidgetPosition),
-        child: ImageCropper(
-          cropperKey: _cropperKeyForTakePictureWidget,
-          image: Image.file(_imageFile!),
+        child: DragTarget<PickImageWidgetPosition>(
+          builder: (context, candidateData, rejectedData) {
+            return LongPressDraggable<PickImageWidgetPosition>(
+              child: ImageCropper(
+                cropperKey: _cropperKeyForTakePictureWidget,
+                image: Image.file(_imageFile!),
+              ),
+              feedback: _buildThumbnailOfImage(_imageFile!),
+              data: _currentPickImageWidgetPosition,
+            );
+          },
+          onAccept: (data) {
+            setState(() {
+              switch (_currentPickImageWidgetPosition) {
+                case PickImageWidgetPosition.left:
+                  _currentPickImageWidgetPosition = PickImageWidgetPosition.right;
+                  break;
+                case PickImageWidgetPosition.right:
+                  _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
+                  break;
+                case PickImageWidgetPosition.top:
+                  _currentPickImageWidgetPosition = PickImageWidgetPosition.bottom;
+                  break;
+                case PickImageWidgetPosition.bottom:
+                  _currentPickImageWidgetPosition = PickImageWidgetPosition.top;
+                  break;
+              }
+            });
+          },
         ),
       ),
     );
