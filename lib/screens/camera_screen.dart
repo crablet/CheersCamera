@@ -1027,9 +1027,12 @@ class _CameraScreenState extends State<CameraScreen>
       alignment: Alignment.topLeft,
       child: Container(
         margin: const EdgeInsets.only(top: 2 * 2 * 5.3, left: 2 * 2 * 5.3),
-        child: InkWell(
+        child: ElevatedButton(
           child: const Icon(Icons.undo),
-          onTap: () async {
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+          ),
+          onPressed: () async {
             XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
             setState(() {
               if (file == null) {
