@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_beautiful_popup/main.dart';
 
 import '../globals.dart';
 
@@ -76,6 +77,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: const Text("About"),
                   leading: const Icon(Icons.info),
                   onTap: () {
+                    BeautifulPopup(
+                        context: context,
+                        template: TemplateCamera
+                    ).show(
+                      title: "Cheers Camera",
+                      content: "Built with love and courage.",
+                    );
                   }
                 ),
               ],
