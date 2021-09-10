@@ -21,6 +21,8 @@ Future<void> main() async {
 
     await App.init();
 
+    EasyLoading.instance.maskType = EasyLoadingMaskType.black;
+
     _requestPermission();
   } on CameraException catch (e) {
     debugPrint("Error in fetching the cameras: $e");
