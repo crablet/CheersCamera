@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_beautiful_popup/main.dart';
 
 import '../globals.dart';
@@ -12,10 +11,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-
-  final spFuture = SharedPreferences.getInstance();
-  bool _showAssistiveGridWidget = App.sp.getBool("showAssistiveGridWidget") ?? false;
-  bool _showSpiritLevelWidget = App.sp.getBool("showSpiritLevelWidget") ?? false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +32,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 SwitchListTile(
                   title: const Text("Assistive Grid"),
-                  value: _showAssistiveGridWidget,
-                  onChanged: (bool value) async {
+                  value: App.showAssistiveGridWidget,
+                  onChanged: (bool value) {
                     setState(() {
-                      _showAssistiveGridWidget = value;
+                      App.showAssistiveGridWidget = value;
                     });
-                    final sp = await spFuture;
-                    sp.setBool("showAssistiveGridWidget", value);
                   },
                   secondary: const Icon(Icons.grid_3x3),
                 ),
@@ -52,13 +45,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 SwitchListTile(
                   title: const Text("Spirit Level"),
-                  value: _showSpiritLevelWidget,
-                  onChanged: (bool value) async {
+                  value: App.showSpiritLevelWidget,
+                  onChanged: (bool value) {
                     setState(() {
-                      _showSpiritLevelWidget = value;
+                      App.showSpiritLevelWidget = value;
                     });
-                    final sp = await spFuture;
-                    sp.setBool("showSpiritLevelWidget", value);
                   },
                   secondary: const Icon(Icons.border_horizontal),
                 )

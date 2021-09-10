@@ -210,9 +210,9 @@ class _CameraScreenState extends State<CameraScreen>
               _buildSelectPictureWidget(),
               if (_hasTakenPicture && _imageFile != null)
                 _buildCropCameraImageWidget(),
-              if (App.sp.getBool("showAssistiveGridWidget") ?? false)
+              if (App.showAssistiveGridWidget)
                 _buildAssistiveGridWidget(),
-              if (App.sp.getBool("showSpiritLevelWidget") ?? false)
+              if (App.showSpiritLevelWidget)
                 const SpiritLevel(),
               if (_hasSelectedPicture)
                 _buildReselectImageWidget(),
