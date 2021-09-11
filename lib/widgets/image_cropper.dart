@@ -124,6 +124,8 @@ class _ImageCropperState extends State<ImageCropper> {
       if (childSize != Size.zero) {
         _transformationController.value = Matrix4.identity() * _getCoverRatio(parentSize, childSize);
       }
+
+      _shouldSetInitialScale = false;
     });
   }
 
