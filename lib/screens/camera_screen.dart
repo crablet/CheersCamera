@@ -952,63 +952,60 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildSelectPictureWidget() {
     return SizedBox.expand(
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        child: FractionallySizedBox(
-            alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
-            widthFactor: _positionEnumToWidthFactor(_currentPickImageWidgetPosition),
-            heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
-            child: !_hasSelectedPicture
-                ? Container(
-                    color: Colors.black38,
-                    child: InkWell(
-                      child: const Icon(Icons.add_a_photo, color: Colors.white,),
-                      onTap: () async {
-                        XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
-                        setState(() {
-                          if (file == null) {
-                            _selectedFile = null;
-                            _hasSelectedPicture = false;
-                          } else {
-                            _selectedFile = File(file.path);
-                            _hasSelectedPicture = true;
-                          }
-                        });
-                      },
-                    ),
-                  )
-                : DragTarget<PickImageWidgetPosition>(
-                    builder: (context, candidateData, rejectedData) {
-                      return LongPressDraggable<PickImageWidgetPosition>(
-                        child: ImageCropper(
-                          cropperKey: _cropperKeyForSelectPictureWidget,
-                          image: Image.file(_selectedFile!),
-                        ),
-                        feedback: _buildThumbnailOfImage(_selectedFile!),
-                        data: _currentPickImageWidgetPosition,
-                      );
-                    },
-                    onAccept: (data) {
-                      setState(() {
-                        switch (_currentPickImageWidgetPosition) {
-                          case PickImageWidgetPosition.left:
-                            _currentPickImageWidgetPosition = PickImageWidgetPosition.right;
-                            break;
-                          case PickImageWidgetPosition.right:
-                            _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
-                            break;
-                          case PickImageWidgetPosition.top:
-                            _currentPickImageWidgetPosition = PickImageWidgetPosition.bottom;
-                            break;
-                          case PickImageWidgetPosition.bottom:
-                            _currentPickImageWidgetPosition = PickImageWidgetPosition.top;
-                            break;
-                        }
-                      });
-                    },
-                  )
+      child: FractionallySizedBox(
+          alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
+          widthFactor: _positionEnumToWidthFactor(_currentPickImageWidgetPosition),
+          heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
+          child: !_hasSelectedPicture
+            ? Container(
+                color: Colors.black38,
+                child: InkWell(
+                  child: const Icon(Icons.add_a_photo, color: Colors.white,),
+                  onTap: () async {
+                    XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    setState(() {
+                      if (file == null) {
+                        _selectedFile = null;
+                        _hasSelectedPicture = false;
+                      } else {
+                        _selectedFile = File(file.path);
+                        _hasSelectedPicture = true;
+                      }
+                    });
+                  },
                 ),
-            )
+              )
+            : DragTarget<PickImageWidgetPosition>(
+                builder: (context, candidateData, rejectedData) {
+                  return LongPressDraggable<PickImageWidgetPosition>(
+                    child: ImageCropper(
+                      cropperKey: _cropperKeyForSelectPictureWidget,
+                      image: Image.file(_selectedFile!),
+                    ),
+                    feedback: _buildThumbnailOfImage(_selectedFile!),
+                    data: _currentPickImageWidgetPosition,
+                  );
+                },
+                onAccept: (data) {
+                  setState(() {
+                    switch (_currentPickImageWidgetPosition) {
+                      case PickImageWidgetPosition.left:
+                        _currentPickImageWidgetPosition = PickImageWidgetPosition.right;
+                        break;
+                      case PickImageWidgetPosition.right:
+                        _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
+                        break;
+                      case PickImageWidgetPosition.top:
+                        _currentPickImageWidgetPosition = PickImageWidgetPosition.bottom;
+                        break;
+                      case PickImageWidgetPosition.bottom:
+                        _currentPickImageWidgetPosition = PickImageWidgetPosition.top;
+                        break;
+                    }
+                  });
+                },
+              )
+        )
       );
   }
 
