@@ -50,9 +50,6 @@ class _CameraScreenState extends State<CameraScreen>
   final GlobalKey _cropperKeyForSelectPictureWidget =
     GlobalKey(debugLabel: "cropperKeyForSelectPictureWidget");
 
-  // final GlobalKey _cropperKeyForSelectPictureOpacityWidget =
-  //   GlobalKey(debugLabel: "cropperKeyForSelectPictureOpacityWidget");
-
   final GlobalKey _cropperKeyForTakePictureWidget =
     GlobalKey(debugLabel: "cropperKeyForTakePictureWidget");
 
@@ -74,7 +71,6 @@ class _CameraScreenState extends State<CameraScreen>
   bool _showFlashChoiceWidget = false;
   bool _showChangeExposureWidget = false;
   bool _showSelectPickImagePositionWidget = false;
-  // bool _showChangePickImageOpacityWidget = false;
 
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
@@ -85,8 +81,6 @@ class _CameraScreenState extends State<CameraScreen>
   double _currentZoomLevel = 1.0;
   double _currentExposureOffset = 0.0;
   FlashMode _currentFlashMode = FlashMode.auto;
-
-  // double _currentPickImageWidgetOpacity = 1.0;
 
   List<File> allFileList = [];
 
@@ -266,7 +260,6 @@ class _CameraScreenState extends State<CameraScreen>
       child: _showFlashChoiceWidget ? _buildFlashChoiceWidget() :
              _showChangeExposureWidget ? _buildChangeExposureWidget() :
              _showSelectPickImagePositionWidget ? _buildSelectPickImagePositionWidget() :
-             // _showChangePickImageOpacityWidget ? _buildChangePickImageOpacityWidget() :
              Container()
     );
   }
@@ -294,7 +287,6 @@ class _CameraScreenState extends State<CameraScreen>
                       _showFlashChoiceWidget = !_showFlashChoiceWidget;
                       _showChangeExposureWidget = false;
                       _showSelectPickImagePositionWidget = false;
-                      // _showChangePickImageOpacityWidget = false;
                     });
                   },
                 ),
@@ -311,21 +303,9 @@ class _CameraScreenState extends State<CameraScreen>
                       _showSelectPickImagePositionWidget = !_showSelectPickImagePositionWidget;
                       _showChangeExposureWidget = false;
                       _showFlashChoiceWidget = false;
-                      // _showChangePickImageOpacityWidget = false;
                     });
                   },
                 ),
-                // InkWell(
-                //   child: const Icon(Icons.opacity, color: Colors.white),
-                //   onTap: () {
-                //     setState(() {
-                //       _showChangePickImageOpacityWidget = !_showChangePickImageOpacityWidget;
-                //       _showChangeExposureWidget = false;
-                //       _showFlashChoiceWidget = false;
-                //       _showSelectPickImagePositionWidget = false;
-                //     });
-                //   },
-                // ),
                 InkWell(
                   child: const Icon(Icons.exposure, color: Colors.grey),
                   onTap: () {
@@ -333,7 +313,6 @@ class _CameraScreenState extends State<CameraScreen>
                       _showChangeExposureWidget = !_showChangeExposureWidget;
                       _showFlashChoiceWidget = false;
                       _showSelectPickImagePositionWidget = false;
-                      // _showChangePickImageOpacityWidget = false;
                     });
                   },
                 ),
@@ -590,65 +569,6 @@ class _CameraScreenState extends State<CameraScreen>
       )
     );
   }
-
-  // Widget _buildChangeOpacityWidget() {
-  //   return Expanded(
-  //     child: SizedBox(
-  //       width: 30,
-  //       child: Slider(
-  //         value: _currentPickImageWidgetOpacity,
-  //         min: 0.0,
-  //         max: 1.0,
-  //         activeColor: Colors.white,
-  //         inactiveColor: Colors.white30,
-  //         onChanged: (value) async {
-  //           setState(() {
-  //             _currentPickImageWidgetOpacity = value;
-  //           });
-  //         },
-  //       ),
-  //     )
-  //   );
-  // }
-
-  // Widget _buildShowPickImageOpacityWidget() {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(left: 5.3, right: 5.3),
-  //     child: Container(
-  //       decoration: BoxDecoration(
-  //         color: Colors.white,
-  //         borderRadius: BorderRadius.circular(10.0),
-  //       ),
-  //       child: Padding(
-  //         padding: const EdgeInsets.all(8.0),
-  //         child: Text(
-  //           _currentPickImageWidgetOpacity.toStringAsFixed(1) + 'x',
-  //           style: const TextStyle(color: Colors.black),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildChangePickImageOpacityWidget() {
-  //   return SingleChildScrollView(
-  //     physics: const BouncingScrollPhysics(),
-  //     child: Column(
-  //       children: [
-  //         Padding(
-  //           padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-  //           child: Row(
-  //             mainAxisAlignment: MainAxisAlignment.start,
-  //             children: [
-  //               _buildShowPickImageOpacityWidget(),
-  //               _buildChangeOpacityWidget(),
-  //             ],
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildSelectPickImagePositionWidget() {
     return SingleChildScrollView(
