@@ -388,18 +388,17 @@ class _CameraScreenState extends State<CameraScreen>
       },
       child: Stack(
         alignment: Alignment.center,
-        children: [
-          const Icon(
+        children: const [
+          Icon(
             Icons.circle,
             color: Colors.white38,
             size: 80,
           ),
-          const Icon(
+          Icon(
             Icons.circle,
             color: Colors.white,
             size: 65,
           ),
-          Container(),
         ],
       ),
     );
