@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cheers_camera/main.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image/image.dart' as image;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
@@ -371,20 +372,27 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildTakePictureWidget() {
     return InkWell(
       onTap: () async {
-        EasyLoading.show();
+        if (!_hasSelectedPicture) {
+          Fluttertoast.showToast(
+            msg: "Please select a picture first.",
+            toastLength: Toast.LENGTH_SHORT,
+          );
+        } else {
+          EasyLoading.show();
 
-        XFile? rawImage = await _takePicture();
-        _imageFile = File(rawImage!.path);
-        String fileFormat = _imageFile!.path.split('.').last;
-        final currentUnix = DateTime.now().microsecondsSinceEpoch;
-        final fileName = "$currentUnix.$fileFormat";  // 目前暂定为"时间戳.后缀"的命名，后续会改
-        await ImageGallerySaver.saveFile(_imageFile!.path, name: fileName); // 保存到相册中
+          XFile? rawImage = await _takePicture();
+          _imageFile = File(rawImage!.path);
+          String fileFormat = _imageFile!.path.split('.').last;
+          final currentUnix = DateTime.now().microsecondsSinceEpoch;
+          final fileName = "$currentUnix.$fileFormat";  // 目前暂定为"时间戳.后缀"的命名，后续会改
+          await ImageGallerySaver.saveFile(_imageFile!.path, name: fileName); // 保存到相册中
 
-        setState(() {
-          _hasTakenPicture = true;
-        });
+          setState(() {
+            _hasTakenPicture = true;
+          });
 
-        EasyLoading.dismiss();
+          EasyLoading.dismiss();
+        }
       },
       child: Stack(
         alignment: Alignment.center,
