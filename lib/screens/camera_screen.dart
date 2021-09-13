@@ -957,16 +957,23 @@ class _CameraScreenState extends State<CameraScreen>
             shape: const CircleBorder(),
           ),
           onPressed: () async {
-            XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
-            setState(() {
-              if (file == null) {
-                _selectedFile = null;
-                _hasSelectedPicture = false;
-              } else {
-                _selectedFile = File(file.path);
-                _hasSelectedPicture = true;
-              }
-            });
+            if (_hasSelectedPicture && !_hasTakenPicture) {
+              XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+              setState(() {
+                if (file == null) {
+                  _selectedFile = null;
+                  _hasSelectedPicture = false;
+                } else {
+                  _selectedFile = File(file.path);
+                  _hasSelectedPicture = true;
+                }
+              });
+            } else if (_hasSelectedPicture && _hasTakenPicture) {
+              setState(() {
+                _hasTakenPicture = false;
+                _imageFile = null;
+              });
+            }
           },
         ),
       ),
