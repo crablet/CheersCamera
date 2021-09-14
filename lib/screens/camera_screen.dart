@@ -375,7 +375,9 @@ class _CameraScreenState extends State<CameraScreen>
       onTap: () async {
         if (!_hasSelectedPicture) {
           Fluttertoast.showToast(
-            msg: "Please select a picture first.",
+            msg: "Please select a picture first.🍻",
+            backgroundColor: const Color(0xffffecb3),
+            textColor: Colors.black,
             toastLength: Toast.LENGTH_SHORT,
           );
         } else {
