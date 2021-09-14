@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:cheers_camera/painters/assistive_grid_painter.dart';
 import 'package:cheers_camera/screens/preview_screen.dart';
 import 'package:cheers_camera/screens/settings_screen.dart';
-import 'package:cheers_camera/widgets/image_cropper.dart';
+import 'package:cheers_camera/widgets/image_cropper.dart' as ic;
 import 'package:cheers_camera/widgets/spirit_level.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +13,7 @@ import 'package:cheers_camera/main.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image/image.dart' as image;
+import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -418,9 +419,9 @@ class _CameraScreenState extends State<CameraScreen>
         EasyLoading.show();
 
         final croppedImageFromSelect =
-          await ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
+          await ic.ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
         final croppedImageFromCamera =
-          await ImageCropper.crop(cropperKey: _cropperKeyForTakePictureWidget);
+          await ic.ImageCropper.crop(cropperKey: _cropperKeyForTakePictureWidget);
         if (croppedImageFromSelect != null && croppedImageFromCamera != null) {
           final mergedImage = await compute(
               _mergeImage,
@@ -434,6 +435,49 @@ class _CameraScreenState extends State<CameraScreen>
                 mergedImage,
                 quality: 100,
                 name: "new_{$croppedFileName}"
+            );
+
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("Image Saved"),
+                    content: const Text("Would you like a further edit?"),
+                    backgroundColor: const Color(0xffffecb3),
+                    actions: [
+                      TextButton(
+                        child: const Text("cancel"),
+                        style: TextButton.styleFrom(
+                          primary: Colors.black,
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                      TextButton(
+                        child: const Text("edit"),
+                        style: TextButton.styleFrom(
+                          primary: Colors.black,
+                        ),
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          final editedImage = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ImageEditor(
+                                appBarColor: const Color(0xffffecb3),
+                                image: mergedImage,
+                              ),
+                            ),
+                          );
+                          await ImageGallerySaver.saveImage(
+                              editedImage,
+                              quality: 100,
+                              name: "new_{$croppedFileName}"
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                }
             );
           }
         }
@@ -905,7 +949,7 @@ class _CameraScreenState extends State<CameraScreen>
             : DragTarget<PickImageWidgetPosition>(
                 builder: (context, candidateData, rejectedData) {
                   return LongPressDraggable<PickImageWidgetPosition>(
-                    child: ImageCropper(
+                    child: ic.ImageCropper(
                       cropperKey: _cropperKeyForSelectPictureWidget,
                       image: Image.file(_selectedFile!),
                     ),
@@ -989,7 +1033,7 @@ class _CameraScreenState extends State<CameraScreen>
         child: DragTarget<PickImageWidgetPosition>(
           builder: (context, candidateData, rejectedData) {
             return LongPressDraggable<PickImageWidgetPosition>(
-              child: ImageCropper(
+              child: ic.ImageCropper(
                 cropperKey: _cropperKeyForTakePictureWidget,
                 image: Image.file(_imageFile!),
               ),
