@@ -19,6 +19,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../globals.dart';
+import '../i18n/camera_screen.i18n.dart';
 
 enum PickImageWidgetPosition {
   left,
@@ -375,7 +376,7 @@ class _CameraScreenState extends State<CameraScreen>
       onTap: () async {
         if (!_hasSelectedPicture) {
           Fluttertoast.showToast(
-            msg: "Please select a picture first.🍻",
+            msg: "Please select a picture first.🍻".i18n,
             backgroundColor: const Color(0xffffecb3),
             textColor: Colors.black,
             toastLength: Toast.LENGTH_SHORT,
@@ -443,19 +444,19 @@ class _CameraScreenState extends State<CameraScreen>
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: const Text("Image Saved"),
-                    content: const Text("Would you like a further edit?"),
+                    title: Text("Image Saved".i18n),
+                    content: Text("Would you like a further edit?".i18n),
                     backgroundColor: const Color(0xffffecb3),
                     actions: [
                       TextButton(
-                        child: const Text("cancel"),
+                        child: Text("cancel".i18n),
                         style: TextButton.styleFrom(
                           primary: Colors.black,
                         ),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
                       TextButton(
-                        child: const Text("edit"),
+                        child: Text("edit".i18n),
                         style: TextButton.styleFrom(
                           primary: Colors.black,
                         ),
