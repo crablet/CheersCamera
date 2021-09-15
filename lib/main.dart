@@ -4,6 +4,8 @@ import 'package:camera/camera.dart';
 import 'package:cheers_camera/screens/camera_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:i18n_extension/i18n_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -41,8 +43,19 @@ class CheersCamera extends StatelessWidget {
         primarySwatch: createMaterialColor(const Color(0xffffecb3)),
       ),
       debugShowCheckedModeBanner: false,
-      home: const CameraScreen(),
+      home: I18n(
+        child: const CameraScreen()
+      ),
       builder: EasyLoading.init(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', "US"),
+        Locale('zh', "CN"),
+      ],
     );
   }
 }
