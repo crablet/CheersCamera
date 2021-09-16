@@ -21,10 +21,6 @@ extension Localization on String {
       {
         "en_us": "edit",
         "zh_cn": "编辑",
-      } +
-      {
-        "en_us": "Built with love and courage.",
-        "zh_cn": "以爱与勇气之名。",
       };
 
   String get i18n => localize(this, _t);

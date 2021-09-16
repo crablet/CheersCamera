@@ -11,10 +11,6 @@ extension Localization on String {
         "zh_cn": "辅助线",
       } +
       {
-        "en_us": "Assistive Grid",
-        "zh_cn": "辅助线",
-      } +
-      {
         "en_us": "Spirit Level",
         "zh_cn": "水平仪",
       } +
