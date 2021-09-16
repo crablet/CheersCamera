@@ -445,7 +445,7 @@ class _CameraScreenState extends State<CameraScreen>
                 builder: (context) {
                   return AlertDialog(
                     title: Text("Image Saved".i18n),
-                    content: Text("Would you like a further edit?".i18n),
+                    content: Text("Further edit?".i18n),
                     backgroundColor: const Color(0xffffecb3),
                     actions: [
                       TextButton(

@@ -11,16 +11,16 @@ extension Localization on String {
         "zh_cn": "照片已保存",
       } +
       {
-        "en_us": "Would you like a further edit?",
-        "zh_cn": "想进一步编辑吗？",
+        "en_us": "Further edit?",
+        "zh_cn": "P图吗？",
       } +
       {
         "en_us": "cancel",
-        "zh_cn": "取消",
+        "zh_cn": "我不！",
       } +
       {
         "en_us": "edit",
-        "zh_cn": "编辑",
+        "zh_cn": "好的呀~",
       };
 
   String get i18n => localize(this, _t);
