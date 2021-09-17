@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -88,6 +89,10 @@ class _CameraScreenState extends State<CameraScreen>
   List<File> allFileList = [];
 
   PickImageWidgetPosition _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
+
+  double _autofocusFrameX = 0;
+  double _autofocusFrameY = 0;
+  bool _showAutofocusFrame = false;
 
   Future<XFile?> _takePicture() async {
     final CameraController? cameraController = controller;
@@ -213,6 +218,19 @@ class _CameraScreenState extends State<CameraScreen>
                 const SpiritLevel(),
               if (_hasSelectedPicture)
                 _buildReselectImageWidget(),
+              Positioned(
+                left: _autofocusFrameX,
+                top: _autofocusFrameY,
+                child: AnimatedOpacity(
+                  opacity: _showAutofocusFrame ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 530),
+                  child: const Icon(
+                    Icons.crop_free,
+                    size: 2 * 53,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Column(
@@ -915,6 +933,21 @@ class _CameraScreenState extends State<CameraScreen>
                 behavior: HitTestBehavior.opaque,
                 onScaleStart: _handleScaleStart,
                 onScaleUpdate: _handleScaleUpdate,
+                onTapUp: (event) {
+                  // 手指松开后开始展示聚焦框
+                  setState(() {
+                    _showAutofocusFrame = true;
+                    _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
+                    _autofocusFrameY = event.localPosition.dy - 53;
+                  });
+
+                  // 松开一段时间后结束展示聚焦框
+                  Timer(const Duration(milliseconds: 530), () {
+                    setState(() {
+                      _showAutofocusFrame = false;
+                    });
+                  });
+                },
                 onTapDown: (details) => onViewFinderTap(details, constraints),
               );
             },
