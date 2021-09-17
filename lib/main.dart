@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:cheers_camera/screens/camera_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,12 @@ Future<void> main() async {
     await App.init();
 
     EasyLoading.instance.maskType = EasyLoadingMaskType.black;
+
+    // 禁止横屏
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
     _requestPermission();
   } on CameraException catch (e) {
