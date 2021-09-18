@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:cheers_camera/painters/af_frame_painter.dart';
 import 'package:cheers_camera/painters/assistive_grid_painter.dart';
 import 'package:cheers_camera/screens/preview_screen.dart';
 import 'package:cheers_camera/screens/settings_screen.dart';
@@ -224,11 +225,10 @@ class _CameraScreenState extends State<CameraScreen>
                 child: AnimatedOpacity(
                   opacity: _showAutofocusFrame ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 530),
-                  child: const Icon(
-                    Icons.crop_free,
-                    size: 2 * 53,
-                    color: Colors.white,
-                  ),
+                  child: CustomPaint(
+                    size: const Size.square(2 * 53),
+                    painter: AFFramePainter(),
+                  )
                 ),
               ),
               Padding(
