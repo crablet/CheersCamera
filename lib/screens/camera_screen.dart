@@ -222,14 +222,16 @@ class _CameraScreenState extends State<CameraScreen>
               Positioned(
                 left: _autofocusFrameX,
                 top: _autofocusFrameY,
-                child: AnimatedOpacity(
-                  opacity: _showAutofocusFrame ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 530),
-                  child: CustomPaint(
-                    size: const Size.square(2 * 53),
-                    painter: AFFramePainter(),
-                  )
-                ),
+                child: IgnorePointer(
+                  child: AnimatedOpacity(
+                    opacity: _showAutofocusFrame ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 530),
+                    child: CustomPaint(
+                      size: const Size.square(2 * 53),
+                      painter: AFFramePainter(),
+                    )
+                  ),
+                )
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
