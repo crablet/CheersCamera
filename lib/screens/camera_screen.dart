@@ -486,7 +486,6 @@ class _CameraScreenState extends State<CameraScreen>
                             context,
                             MaterialPageRoute(
                               builder: (context) => ImageEditor(
-                                appBarColor: const Color(0xffffecb3),
                                 image: mergedImage,
                               ),
                             ),
