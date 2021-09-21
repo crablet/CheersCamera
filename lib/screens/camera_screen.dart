@@ -7,6 +7,7 @@ import 'package:cheers_camera/painters/assistive_grid_painter.dart';
 import 'package:cheers_camera/screens/preview_screen.dart';
 import 'package:cheers_camera/screens/settings_screen.dart';
 import 'package:cheers_camera/widgets/image_cropper.dart' as ic;
+import 'package:cheers_camera/widgets/preview_mask.dart';
 import 'package:cheers_camera/widgets/spirit_level.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +58,9 @@ class _CameraScreenState extends State<CameraScreen>
 
   final GlobalKey _cropperKeyForTakePictureWidget =
     GlobalKey(debugLabel: "cropperKeyForTakePictureWidget");
+
+  final GlobalKey<PreviewMaskState> _previewMaskKey =
+    GlobalKey(debugLabel: "previewMaskKey");
 
   CameraController? controller;
 
@@ -210,6 +214,8 @@ class _CameraScreenState extends State<CameraScreen>
           child: Stack(
             children: [
               _buildCameraPreviewWidget(),
+              if (_hasSelectedPicture && _selectedFile != null)
+                _buildPreviewMaskWidget(),
               _buildSelectPictureWidget(),
               if (_hasTakenPicture && _imageFile != null)
                 _buildCropCameraImageWidget(),
@@ -272,6 +278,17 @@ class _CameraScreenState extends State<CameraScreen>
       child: SizedBox.expand(
         child: CustomPaint(
           painter: AssistiveGridPainter(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewMaskWidget() {
+    return IgnorePointer(
+      child: SizedBox.expand(
+        child: PreviewMask(
+          key: _previewMaskKey,
+          child: Image.file(_selectedFile!)
         ),
       ),
     );
@@ -988,6 +1005,7 @@ class _CameraScreenState extends State<CameraScreen>
                   return LongPressDraggable<PickImageWidgetPosition>(
                     child: ic.ImageCropper(
                       cropperKey: _cropperKeyForSelectPictureWidget,
+                      previewMaskKey: _previewMaskKey,
                       image: Image.file(_selectedFile!),
                     ),
                     feedback: _buildThumbnailOfImage(_selectedFile!),

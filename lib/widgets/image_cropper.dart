@@ -4,11 +4,14 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 
+import 'preview_mask.dart';
+
 class ImageCropper extends StatefulWidget {
   const ImageCropper({
     Key? key,
     required this.cropperKey,
     required this.image,
+    this.previewMaskKey
   }) : super(key: key);
 
   // 准备被裁剪的图像
@@ -16,6 +19,8 @@ class ImageCropper extends StatefulWidget {
 
   // 使用crop要用到的key
   final GlobalKey? cropperKey;
+
+  final GlobalKey<PreviewMaskState>? previewMaskKey;
 
   @override
   _ImageCropperState createState() => _ImageCropperState();
@@ -103,6 +108,9 @@ class _ImageCropperState extends State<ImageCropper> {
                   return widget.image;
                 },
               ),
+              onInteractionEnd: (details) => widget.previewMaskKey?.currentState?.onScaleEnd(details),
+              onInteractionStart: (details) => widget.previewMaskKey?.currentState?.onScaleStart(details),
+              onInteractionUpdate: (details) => widget.previewMaskKey?.currentState?.onScaleUpdate(details),
             );
           },
         )
