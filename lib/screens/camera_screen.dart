@@ -62,6 +62,8 @@ class _CameraScreenState extends State<CameraScreen>
   final GlobalKey<PreviewMaskState> _previewMaskKey =
     GlobalKey(debugLabel: "previewMaskKey");
 
+  late PreviewMaskTransformationController _transformationController;
+
   CameraController? controller;
 
   File? _imageFile;
@@ -171,6 +173,7 @@ class _CameraScreenState extends State<CameraScreen>
   void initState() {
     // 初始化相机
     onNewCameraSelected(cameras.first);
+    _transformationController = PreviewMaskTransformationController();
     super.initState();
   }
 
@@ -286,12 +289,46 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildPreviewMaskWidget() {
     return IgnorePointer(
       child: SizedBox.expand(
-        child: PreviewMask(
-          key: _previewMaskKey,
-          child: Image.file(_selectedFile!)
-        ),
+        child: RepaintBoundary(
+          child: LayoutBuilder(
+            builder: (_, constraint) {
+              return PreviewMask(
+                transformationController: _transformationController,
+                key: _previewMaskKey,
+                child: Builder(
+                  builder: (context) {
+                    _setInitialScale(context, constraint.smallest);
+                    return Image.file(_selectedFile!);
+                  },
+                ),
+                constrained: false,
+                minScale: 0.053,
+              );
+            },
+          ),
+        )
       ),
     );
+  }
+
+  // 基于外部以及内部（图像）的约束计算比例
+  double _getCoverRatio(Size outside, Size inside) {
+    return outside.width / outside.height > inside.width / inside.height
+        ? outside.width / inside.width
+        : outside.height / inside.height;
+  }
+
+  // 设置图像的初始比例
+  void _setInitialScale(BuildContext context, Size parentSize) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      final renderBox = context.findRenderObject() as RenderBox?;
+      final childSize = renderBox?.size ?? Size.zero;
+      if (childSize != Size.zero) {
+        _transformationController.value = Matrix4.identity() * _getCoverRatio(parentSize, childSize);
+      }
+
+      // _shouldSetInitialScale = false;
+    });
   }
 
   Widget _buildToolBoxDetailWidget() {
