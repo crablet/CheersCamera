@@ -82,6 +82,7 @@ class _CameraScreenState extends State<CameraScreen>
   bool _showFlashChoiceWidget = false;
   bool _showChangeExposureWidget = false;
   bool _showSelectPickImagePositionWidget = false;
+  bool _showPreviewMaskOpacityWidget = false;
 
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
@@ -91,6 +92,7 @@ class _CameraScreenState extends State<CameraScreen>
   double _baseScale = 1.0;
   double _currentZoomLevel = 1.0;
   double _currentExposureOffset = 0.0;
+  double _currentPreviewMaskOpacity = 0.0;
   FlashMode _currentFlashMode = FlashMode.auto;
 
   List<File> allFileList = [];
@@ -289,24 +291,27 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildPreviewMaskWidget() {
     return IgnorePointer(
       child: SizedBox.expand(
-        child: RepaintBoundary(
-          child: LayoutBuilder(
-            builder: (_, constraint) {
-              return PreviewMask(
-                transformationController: _transformationController,
-                key: _previewMaskKey,
-                child: Builder(
-                  builder: (context) {
-                    _setInitialScale(context, constraint.smallest);
-                    return Image.file(_selectedFile!);
-                  },
-                ),
-                constrained: false,
-                minScale: 0.053,
-              );
-            },
-          ),
-        )
+        child: Opacity(
+          opacity: _currentPreviewMaskOpacity,
+          child: RepaintBoundary(
+            child: LayoutBuilder(
+              builder: (_, constraint) {
+                return PreviewMask(
+                  transformationController: _transformationController,
+                  key: _previewMaskKey,
+                  child: Builder(
+                    builder: (context) {
+                      _setInitialScale(context, constraint.smallest);
+                      return Image.file(_selectedFile!);
+                    },
+                  ),
+                  constrained: false,
+                  minScale: 0.053,
+                );
+              },
+            ),
+          )
+        ),
       ),
     );
   }
@@ -337,6 +342,7 @@ class _CameraScreenState extends State<CameraScreen>
       child: _showFlashChoiceWidget ? _buildFlashChoiceWidget() :
              _showChangeExposureWidget ? _buildChangeExposureWidget() :
              _showSelectPickImagePositionWidget ? _buildSelectPickImagePositionWidget() :
+             _showPreviewMaskOpacityWidget ? _buildChangePreviewMaskOpacityWidget() :
              Container()
     );
   }
@@ -380,6 +386,7 @@ class _CameraScreenState extends State<CameraScreen>
                       _showSelectPickImagePositionWidget = !_showSelectPickImagePositionWidget;
                       _showChangeExposureWidget = false;
                       _showFlashChoiceWidget = false;
+                      _showPreviewMaskOpacityWidget = false;
                     });
                   },
                 ),
@@ -388,6 +395,18 @@ class _CameraScreenState extends State<CameraScreen>
                   onTap: () {
                     setState(() {
                       _showChangeExposureWidget = !_showChangeExposureWidget;
+                      _showFlashChoiceWidget = false;
+                      _showSelectPickImagePositionWidget = false;
+                      _showPreviewMaskOpacityWidget = false;
+                    });
+                  },
+                ),
+                InkWell(
+                  child: const Icon(Icons.opacity, color: Colors.grey),
+                  onTap: () {
+                    setState(() {
+                      _showPreviewMaskOpacityWidget = !_showPreviewMaskOpacityWidget;
+                      _showChangeExposureWidget = false;
                       _showFlashChoiceWidget = false;
                       _showSelectPickImagePositionWidget = false;
                     });
@@ -813,6 +832,24 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
+  Widget _buildChangeCurrentPreviewMaskOpacityWidget() {
+    return Expanded(
+        child: SizedBox(
+          width: 30,
+          child: Slider(
+            value: _currentPreviewMaskOpacity,
+            min: 0.0,
+            max: 1.0,
+            onChanged: (value) async {
+              setState(() {
+                _currentPreviewMaskOpacity = value;
+              });
+            },
+          ),
+        )
+    );
+  }
+
   Widget _buildShowExposureOffsetWidget() {
     return Padding(
       padding: const EdgeInsets.only(left: 5.3, right: 5.3),
@@ -825,6 +862,25 @@ class _CameraScreenState extends State<CameraScreen>
           padding: const EdgeInsets.all(8.0),
           child: Text(
             _currentExposureOffset.toStringAsFixed(1) + 'x',
+            style: const TextStyle(color: Colors.black),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShowCurrentPreviewMaskOpacityWidget() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5.3, right: 5.3),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xffffecb3),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            _currentPreviewMaskOpacity.toStringAsFixed(1) + 'x',
             style: const TextStyle(color: Colors.black),
           ),
         ),
@@ -926,6 +982,26 @@ class _CameraScreenState extends State<CameraScreen>
               children: [
                 _buildShowExposureOffsetWidget(),
                 _buildChangeExposureOffsetWidget(),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChangePreviewMaskOpacityWidget() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                _buildShowCurrentPreviewMaskOpacityWidget(),
+                _buildChangeCurrentPreviewMaskOpacityWidget(),
               ],
             ),
           )
