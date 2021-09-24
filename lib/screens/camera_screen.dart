@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:cheers_camera/painters/af_frame_painter.dart';
 import 'package:cheers_camera/painters/assistive_grid_painter.dart';
-import 'package:cheers_camera/screens/preview_screen.dart';
+// import 'package:cheers_camera/screens/preview_screen.dart';
 import 'package:cheers_camera/screens/settings_screen.dart';
 import 'package:cheers_camera/widgets/image_cropper.dart' as ic;
 import 'package:cheers_camera/widgets/preview_mask.dart';
@@ -263,7 +263,8 @@ class _CameraScreenState extends State<CameraScreen>
                         _hasSelectedPicture && _hasTakenPicture
                             ? _buildMergePictureWidget()
                             : _buildTakePictureWidget(),
-                        _buildPreviewPictureWidget()
+                        const SizedBox(width: 60, height: 60)
+                        // _buildPreviewPictureWidget()
                       ],
                     )
                   ],
@@ -432,37 +433,37 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
-  Widget _buildPreviewPictureWidget() {
-    return InkWell(
-      onTap: _imageFile != null
-        ? () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PreviewScreen(imageFile: _imageFile!, fileList: allFileList)
-            )
-          );
-        }
-        : null,
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(10.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 2,
-          ),
-          image: _imageFile != null
-            ? DecorationImage(
-                image: FileImage(_imageFile!),
-                fit: BoxFit.cover,
-            )
-            : null
-        ),
-      ),
-    );
-  }
+  // Widget _buildPreviewPictureWidget() {
+  //   return InkWell(
+  //     onTap: _imageFile != null
+  //       ? () {
+  //         Navigator.of(context).push(
+  //           MaterialPageRoute(
+  //             builder: (context) => PreviewScreen(imageFile: _imageFile!, fileList: allFileList)
+  //           )
+  //         );
+  //       }
+  //       : null,
+  //     child: Container(
+  //       width: 60,
+  //       height: 60,
+  //       decoration: BoxDecoration(
+  //         color: Colors.black,
+  //         borderRadius: BorderRadius.circular(10.0),
+  //         border: Border.all(
+  //           color: Colors.white,
+  //           width: 2,
+  //         ),
+  //         image: _imageFile != null
+  //           ? DecorationImage(
+  //               image: FileImage(_imageFile!),
+  //               fit: BoxFit.cover,
+  //           )
+  //           : null
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildTakePictureWidget() {
     return InkWell(
