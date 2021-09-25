@@ -7,7 +7,6 @@ import 'package:cheers_camera/painters/assistive_grid_painter.dart';
 // import 'package:cheers_camera/screens/preview_screen.dart';
 import 'package:cheers_camera/screens/settings_screen.dart';
 import 'package:cheers_camera/widgets/image_cropper.dart' as ic;
-import 'package:cheers_camera/widgets/preview_mask.dart';
 import 'package:cheers_camera/widgets/spirit_level.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -58,11 +57,6 @@ class _CameraScreenState extends State<CameraScreen>
 
   final GlobalKey _cropperKeyForTakePictureWidget =
     GlobalKey(debugLabel: "cropperKeyForTakePictureWidget");
-
-  final GlobalKey<PreviewMaskState> _previewMaskKey =
-    GlobalKey(debugLabel: "previewMaskKey");
-
-  late PreviewMaskTransformationController _transformationController;
 
   CameraController? controller;
 
@@ -175,7 +169,6 @@ class _CameraScreenState extends State<CameraScreen>
   void initState() {
     // 初始化相机
     onNewCameraSelected(cameras.first);
-    _transformationController = PreviewMaskTransformationController();
     super.initState();
   }
 
@@ -219,8 +212,6 @@ class _CameraScreenState extends State<CameraScreen>
           child: Stack(
             children: [
               _buildCameraPreviewWidget(),
-              if (_hasSelectedPicture && _selectedFile != null)
-                _buildPreviewMaskWidget(),
               _buildSelectPictureWidget(),
               if (_hasTakenPicture && _imageFile != null)
                 _buildCropCameraImageWidget(),
@@ -287,54 +278,6 @@ class _CameraScreenState extends State<CameraScreen>
         ),
       ),
     );
-  }
-
-  Widget _buildPreviewMaskWidget() {
-    return IgnorePointer(
-      child: SizedBox.expand(
-        child: Opacity(
-          opacity: _currentPreviewMaskOpacity,
-          child: RepaintBoundary(
-            child: LayoutBuilder(
-              builder: (_, constraint) {
-                return PreviewMask(
-                  transformationController: _transformationController,
-                  key: _previewMaskKey,
-                  child: Builder(
-                    builder: (context) {
-                      _setInitialScale(context, constraint.smallest);
-                      return Image.file(_selectedFile!);
-                    },
-                  ),
-                  constrained: false,
-                  minScale: 0.053,
-                );
-              },
-            ),
-          )
-        ),
-      ),
-    );
-  }
-
-  // 基于外部以及内部（图像）的约束计算比例
-  double _getCoverRatio(Size outside, Size inside) {
-    return outside.width / outside.height > inside.width / inside.height
-        ? outside.width / inside.width
-        : outside.height / inside.height;
-  }
-
-  // 设置图像的初始比例
-  void _setInitialScale(BuildContext context, Size parentSize) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      final renderBox = context.findRenderObject() as RenderBox?;
-      final childSize = renderBox?.size ?? Size.zero;
-      if (childSize != Size.zero) {
-        _transformationController.value = Matrix4.identity() * _getCoverRatio(parentSize, childSize);
-      }
-
-      // _shouldSetInitialScale = false;
-    });
   }
 
   Widget _buildToolBoxDetailWidget() {
@@ -1122,7 +1065,6 @@ class _CameraScreenState extends State<CameraScreen>
                   return LongPressDraggable<PickImageWidgetPosition>(
                     child: ic.ImageCropper(
                       cropperKey: _cropperKeyForSelectPictureWidget,
-                      previewMaskKey: _previewMaskKey,
                       image: Image.file(_selectedFile!),
                     ),
                     feedback: _buildThumbnailOfImage(_selectedFile!),
