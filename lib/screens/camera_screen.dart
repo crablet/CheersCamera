@@ -1091,30 +1091,33 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildSelectPictureWidget() {
     return SizedBox.expand(
-      child: FractionallySizedBox(
-          alignment: _positionEnumToAlignment(_currentPickImageWidgetPosition),
-          widthFactor: _positionEnumToWidthFactor(_currentPickImageWidgetPosition),
-          heightFactor: _positionEnumToHeightFactor(_currentPickImageWidgetPosition),
-          child: !_hasSelectedPicture
-            ? Container(
-                color: Colors.black38,
-                child: InkWell(
-                  child: const Icon(Icons.add_a_photo, color: Colors.white,),
-                  onTap: () async {
-                    XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
-                    setState(() {
-                      if (file == null) {
-                        _selectedFile = null;
-                        _hasSelectedPicture = false;
-                      } else {
-                        _selectedFile = File(file.path);
-                        _hasSelectedPicture = true;
-                      }
-                    });
-                  },
-                ),
-              )
-            : DragTarget<PickImageWidgetPosition>(
+      child: !_hasSelectedPicture
+          ? Container(
+              color: Colors.black38,
+              child: InkWell(
+                child: const Icon(Icons.add_a_photo, color: Colors.white,),
+                onTap: () async {
+                  XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+                  setState(() {
+                    if (file == null) {
+                      _selectedFile = null;
+                      _hasSelectedPicture = false;
+                    } else {
+                      _selectedFile = File(file.path);
+                      _hasSelectedPicture = true;
+                    }
+                  });
+                },
+              ),
+            )
+          : ShaderMask(
+              shaderCallback: (rect) => LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.topRight,
+                  colors: [Colors.white, Colors.white, Colors.white.withOpacity(.53), Colors.white.withOpacity(.53)],
+                  stops: const [.0, .5, .5, 1.0]  // 这样做会不会导致插值的时候除数为0从而异常？目前来说没问题，以后呢？
+              ).createShader(rect),
+              child: DragTarget<PickImageWidgetPosition>(
                 builder: (context, candidateData, rejectedData) {
                   return LongPressDraggable<PickImageWidgetPosition>(
                     child: ic.ImageCropper(
@@ -1144,8 +1147,8 @@ class _CameraScreenState extends State<CameraScreen>
                     }
                   });
                 },
-              )
-        )
+              ),
+            )
       );
   }
 
