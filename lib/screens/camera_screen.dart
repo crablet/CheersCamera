@@ -1031,66 +1031,75 @@ class _CameraScreenState extends State<CameraScreen>
       );
     }
   }
+  
+  Widget _buildPreviewMaskWidget() {
+    return ShaderMask(
+      shaderCallback: (rect) => LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.topRight,
+        colors: [Colors.white, Colors.white, Colors.white.withOpacity(.53), Colors.white.withOpacity(.53)],
+        stops: const [.0, .5, .5, 1.0]  // 这样做会不会导致插值的时候除数为0从而异常？目前来说没问题，以后呢？
+      ).createShader(rect),
+      child: DragTarget<PickImageWidgetPosition>(
+        builder: (context, candidateData, rejectedData) {
+          return LongPressDraggable<PickImageWidgetPosition>(
+            child: ic.ImageCropper(
+              cropperKey: _cropperKeyForSelectPictureWidget,
+              image: Image.file(_selectedFile!),
+            ),
+            feedback: _buildThumbnailOfImage(_selectedFile!),
+            data: _currentPickImageWidgetPosition,
+          );
+        },
+        onAccept: (data) {
+          setState(() {
+            switch (_currentPickImageWidgetPosition) {
+              case PickImageWidgetPosition.left:
+                _currentPickImageWidgetPosition = PickImageWidgetPosition.right;
+                break;
+              case PickImageWidgetPosition.right:
+                _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
+                break;
+              case PickImageWidgetPosition.top:
+                _currentPickImageWidgetPosition = PickImageWidgetPosition.bottom;
+                break;
+              case PickImageWidgetPosition.bottom:
+                _currentPickImageWidgetPosition = PickImageWidgetPosition.top;
+                break;
+            }
+          });
+        },
+      ),
+    );
+  }
 
   Widget _buildSelectPictureWidget() {
     return SizedBox.expand(
       child: !_hasSelectedPicture
-          ? Container(
-              color: Colors.black38,
-              child: InkWell(
-                child: const Icon(Icons.add_a_photo, color: Colors.white,),
-                onTap: () async {
-                  XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
-                  setState(() {
-                    if (file == null) {
-                      _selectedFile = null;
-                      _hasSelectedPicture = false;
-                    } else {
-                      _selectedFile = File(file.path);
-                      _hasSelectedPicture = true;
-                    }
-                  });
-                },
+          ? FractionallySizedBox(
+              alignment: _positionEnumToSelectPictureAlignment(_currentPickImageWidgetPosition),
+              widthFactor: _positionEnumToSelectPictureWidthFactor(_currentPickImageWidgetPosition),
+              heightFactor: _positionEnumToHeightSelectPictureFactor(_currentPickImageWidgetPosition),
+              child: Container(
+                color: Colors.black38,
+                child: InkWell(
+                  child: const Icon(Icons.add_a_photo, color: Colors.white,),
+                  onTap: () async {
+                    XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    setState(() {
+                      if (file == null) {
+                        _selectedFile = null;
+                        _hasSelectedPicture = false;
+                      } else {
+                        _selectedFile = File(file.path);
+                        _hasSelectedPicture = true;
+                      }
+                    });
+                  },
+                ),
               ),
             )
-          : ShaderMask(
-              shaderCallback: (rect) => LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.topRight,
-                  colors: [Colors.white, Colors.white, Colors.white.withOpacity(.53), Colors.white.withOpacity(.53)],
-                  stops: const [.0, .5, .5, 1.0]  // 这样做会不会导致插值的时候除数为0从而异常？目前来说没问题，以后呢？
-              ).createShader(rect),
-              child: DragTarget<PickImageWidgetPosition>(
-                builder: (context, candidateData, rejectedData) {
-                  return LongPressDraggable<PickImageWidgetPosition>(
-                    child: ic.ImageCropper(
-                      cropperKey: _cropperKeyForSelectPictureWidget,
-                      image: Image.file(_selectedFile!),
-                    ),
-                    feedback: _buildThumbnailOfImage(_selectedFile!),
-                    data: _currentPickImageWidgetPosition,
-                  );
-                },
-                onAccept: (data) {
-                  setState(() {
-                    switch (_currentPickImageWidgetPosition) {
-                      case PickImageWidgetPosition.left:
-                        _currentPickImageWidgetPosition = PickImageWidgetPosition.right;
-                        break;
-                      case PickImageWidgetPosition.right:
-                        _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
-                        break;
-                      case PickImageWidgetPosition.top:
-                        _currentPickImageWidgetPosition = PickImageWidgetPosition.bottom;
-                        break;
-                      case PickImageWidgetPosition.bottom:
-                        _currentPickImageWidgetPosition = PickImageWidgetPosition.top;
-                        break;
-                    }
-                  });
-                },
-              ),
-            )
+          : _buildPreviewMaskWidget()
       );
   }
 
@@ -1178,7 +1187,7 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
-  Alignment _positionEnumToAlignment(PickImageWidgetPosition position) {
+  Alignment _positionEnumToSelectPictureAlignment(PickImageWidgetPosition position) {
     switch (position) {
       case PickImageWidgetPosition.left: return Alignment.topLeft;
       case PickImageWidgetPosition.right: return Alignment.topRight;
@@ -1187,7 +1196,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  double _positionEnumToWidthFactor(PickImageWidgetPosition position) {
+  double _positionEnumToSelectPictureWidthFactor(PickImageWidgetPosition position) {
     switch (position) {
       case PickImageWidgetPosition.left: return 0.5;
       case PickImageWidgetPosition.right: return 0.5;
@@ -1196,7 +1205,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  double _positionEnumToHeightFactor(PickImageWidgetPosition position) {
+  double _positionEnumToHeightSelectPictureFactor(PickImageWidgetPosition position) {
     switch (position) {
       case PickImageWidgetPosition.left: return 1;
       case PickImageWidgetPosition.right: return 1;
