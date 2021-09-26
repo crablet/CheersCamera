@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:cheers_camera/painters/af_frame_painter.dart';
 import 'package:cheers_camera/painters/assistive_grid_painter.dart';
-// import 'package:cheers_camera/screens/preview_screen.dart';
 import 'package:cheers_camera/screens/settings_screen.dart';
 import 'package:cheers_camera/widgets/image_cropper.dart' as ic;
 import 'package:cheers_camera/widgets/spirit_level.dart';
@@ -1037,7 +1036,12 @@ class _CameraScreenState extends State<CameraScreen>
       shaderCallback: (rect) => LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.topRight,
-        colors: [Colors.white, Colors.white, Colors.white.withOpacity(.53), Colors.white.withOpacity(.53)],
+        colors: [
+          Colors.white,
+          Colors.white,
+          Colors.white.withOpacity(_currentPreviewMaskOpacity),
+          Colors.white.withOpacity(_currentPreviewMaskOpacity)
+        ],
         stops: const [.0, .5, .5, 1.0]  // 这样做会不会导致插值的时候除数为0从而异常？目前来说没问题，以后呢？
       ).createShader(rect),
       child: DragTarget<PickImageWidgetPosition>(
