@@ -4,6 +4,14 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 
+enum CropPosition {
+  full,
+  leftHalf,
+  rightHalf,
+  topHalf,
+  bottomHalf,
+}
+
 class ImageCropper extends StatefulWidget {
   const ImageCropper({
     Key? key,
@@ -25,12 +33,20 @@ class ImageCropper extends StatefulWidget {
   static Future<Uint8List?> crop({
     required GlobalKey cropperKey,
     double pixelRatio = 3,
+    CropPosition cropPosition = CropPosition.full
   }) async {
     // 获取裁剪后的图像
     final renderObject = cropperKey.currentContext!.findRenderObject();
     final boundary = renderObject as RenderRepaintBoundary;
     final image = await boundary.toImage(pixelRatio: pixelRatio);
 
+    switch (cropPosition) {
+      case CropPosition.full: break;
+      case CropPosition.leftHalf: break;
+      case CropPosition.rightHalf: break;
+      case CropPosition.topHalf: break;
+      case CropPosition.bottomHalf: break;
+    }
     // 将图片转化为PNG格式，并返回
     final byteData = await image.toByteData(
       format: ImageByteFormat.png,
