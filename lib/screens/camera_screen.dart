@@ -1034,8 +1034,8 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildPreviewMaskWidget() {
     return ShaderMask(
       shaderCallback: (rect) => LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.topRight,
+        begin: _positionEnumToPreviewMaskBeginAlignment(_currentPickImageWidgetPosition),
+        end: _positionEnumToPreviewMaskEndAlignment(_currentPickImageWidgetPosition),
         colors: [
           Colors.white,
           Colors.white,
@@ -1242,6 +1242,24 @@ class _CameraScreenState extends State<CameraScreen>
       case PickImageWidgetPosition.right: return 1;
       case PickImageWidgetPosition.top: return 0.5;
       case PickImageWidgetPosition.bottom: return 0.5;
+    }
+  }
+
+  Alignment _positionEnumToPreviewMaskBeginAlignment(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return Alignment.topLeft;
+      case PickImageWidgetPosition.right: return Alignment.topRight;
+      case PickImageWidgetPosition.top: return Alignment.topCenter;
+      case PickImageWidgetPosition.bottom: return Alignment.bottomCenter;
+    }
+  }
+
+  Alignment _positionEnumToPreviewMaskEndAlignment(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return Alignment.topRight;
+      case PickImageWidgetPosition.right: return Alignment.topLeft;
+      case PickImageWidgetPosition.top: return Alignment.bottomCenter;
+      case PickImageWidgetPosition.bottom: return Alignment.topCenter;
     }
   }
 }
