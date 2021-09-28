@@ -458,7 +458,10 @@ class _CameraScreenState extends State<CameraScreen>
         EasyLoading.show();
 
         final croppedImageFromSelect =
-          await ic.ImageCropper.crop(cropperKey: _cropperKeyForSelectPictureWidget);
+          await ic.ImageCropper.crop(
+              cropperKey: _cropperKeyForSelectPictureWidget,
+              cropPosition: _positionEnumToPreviewMaskCropPosition(_currentPickImageWidgetPosition)
+          );
         final croppedImageFromCamera =
           await ic.ImageCropper.crop(cropperKey: _cropperKeyForTakePictureWidget);
         if (croppedImageFromSelect != null && croppedImageFromCamera != null) {
@@ -1260,6 +1263,15 @@ class _CameraScreenState extends State<CameraScreen>
       case PickImageWidgetPosition.right: return Alignment.topLeft;
       case PickImageWidgetPosition.top: return Alignment.bottomCenter;
       case PickImageWidgetPosition.bottom: return Alignment.topCenter;
+    }
+  }
+
+  ic.CropPosition _positionEnumToPreviewMaskCropPosition(PickImageWidgetPosition position) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return ic.CropPosition.leftHalf;
+      case PickImageWidgetPosition.right: return ic.CropPosition.rightHalf;
+      case PickImageWidgetPosition.top: return ic.CropPosition.topHalf;
+      case PickImageWidgetPosition.bottom: return ic.CropPosition.bottomHalf;
     }
   }
 }

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_editor/image_editor.dart';
 
 enum CropPosition {
   full,
@@ -39,19 +40,47 @@ class ImageCropper extends StatefulWidget {
     final renderObject = cropperKey.currentContext!.findRenderObject();
     final boundary = renderObject as RenderRepaintBoundary;
     final image = await boundary.toImage(pixelRatio: pixelRatio);
-
-    switch (cropPosition) {
-      case CropPosition.full: break;
-      case CropPosition.leftHalf: break;
-      case CropPosition.rightHalf: break;
-      case CropPosition.topHalf: break;
-      case CropPosition.bottomHalf: break;
-    }
     // 将图片转化为PNG格式，并返回
     final byteData = await image.toByteData(
       format: ImageByteFormat.png,
     );
     final pngBytes = byteData?.buffer.asUint8List();
+
+    if (pngBytes != null) {
+      switch (cropPosition) {
+        case CropPosition.full:
+          final editorOption = ImageEditorOption()
+            ..addOption(ClipOption(x: 0, y: 0, width: image.width, height: image.height))
+            ..outputFormat = const OutputFormat.png();
+          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
+
+        case CropPosition.leftHalf:
+          final editorOption = ImageEditorOption()
+            ..addOption(ClipOption(x: 0, y: 0, width: image.width / 2, height: image.height))
+            ..outputFormat = const OutputFormat.png();
+          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
+
+        case CropPosition.rightHalf:
+          final editorOption = ImageEditorOption()
+            ..addOption(ClipOption(x: image.width / 2, y: 0, width: image.width / 2, height: image.height))
+            ..outputFormat = const OutputFormat.png();
+          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
+
+        case CropPosition.topHalf:
+          final editorOption = ImageEditorOption()
+            ..addOption(ClipOption(x: 0, y: 0, width: image.width, height: image.height / 2))
+            ..outputFormat = const OutputFormat.png();
+          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
+
+        case CropPosition.bottomHalf:
+          final editorOption = ImageEditorOption()
+            ..addOption(ClipOption(x: 0, y: image.height / 2, width: image.width, height: image.height / 2))
+            ..outputFormat = const OutputFormat.png();
+          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
+
+        default: return pngBytes;
+      }
+    }
 
     return pngBytes;
   }
