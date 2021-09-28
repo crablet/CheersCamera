@@ -45,7 +45,7 @@ class CheersCamera extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "CheersCamera",
+      title: "Cheers Camera",
       theme: ThemeData(
         primarySwatch: createMaterialColor(const Color(0xffffecb3)),
       ),
