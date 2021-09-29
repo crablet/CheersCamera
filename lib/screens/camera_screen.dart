@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:cheers_camera/painters/af_frame_painter.dart';
@@ -7,16 +8,15 @@ import 'package:cheers_camera/painters/assistive_grid_painter.dart';
 import 'package:cheers_camera/screens/settings_screen.dart';
 import 'package:cheers_camera/widgets/image_cropper.dart' as ic;
 import 'package:cheers_camera/widgets/spirit_level.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cheers_camera/main.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image/image.dart' as image;
-import 'package:image_editor_plus/image_editor_plus.dart';
+import 'package:image_editor/image_editor.dart';
+import 'package:image_editor_plus/image_editor_plus.dart' as imp;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:image_picker/image_picker.dart' as ip;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../globals.dart';
@@ -30,14 +30,23 @@ enum PickImageWidgetPosition {
 }
 
 class MergeImageParam {
-  final List<int> imageFromSelect;
-  final List<int> imageFromCamera;
+  final Uint8List imageFromSelect;
+  final Uint8List imageFromCamera;
   final PickImageWidgetPosition currentPickImageWidgetPosition;
+  final int imageFromSelectWidth;
+  final int imageFromSelectHeight;
+  final int imageFromCameraWidth;
+  final int imageFromCameraHeight;
+
 
   MergeImageParam(
       this.imageFromSelect,
       this.imageFromCamera,
       this.currentPickImageWidgetPosition,
+      this.imageFromSelectWidth,
+      this.imageFromSelectHeight,
+      this.imageFromCameraWidth,
+      this.imageFromCameraHeight,
   );
 }
 
@@ -457,19 +466,36 @@ class _CameraScreenState extends State<CameraScreen>
       onTap: () async {
         EasyLoading.show();
 
-        final croppedImageFromSelect =
+        final croppedImageFromSelectResult =
           await ic.ImageCropper.crop(
               cropperKey: _cropperKeyForSelectPictureWidget,
               cropPosition: _positionEnumToPreviewMaskCropPosition(_currentPickImageWidgetPosition)
           );
-        final croppedImageFromCamera =
-          await ic.ImageCropper.crop(cropperKey: _cropperKeyForTakePictureWidget);
-        if (croppedImageFromSelect != null && croppedImageFromCamera != null) {
-          final mergedImage = await compute(
-              _mergeImage,
-              MergeImageParam(croppedImageFromSelect, croppedImageFromCamera, _currentPickImageWidgetPosition)
-          );
+        final croppedImageFromSelect = croppedImageFromSelectResult.result;
+        final croppedImageFromSelectWidth = croppedImageFromSelectResult.imageWidth;
+        final croppedImageFromSelectHeight = croppedImageFromSelectResult.imageHeight;
 
+        final croppedImageFromCameraResult =
+          await ic.ImageCropper.crop(cropperKey: _cropperKeyForTakePictureWidget);
+        final croppedImageFromCamera = croppedImageFromCameraResult.result;
+        final croppedImageFromCameraWidth = croppedImageFromCameraResult.imageWidth;
+        final croppedImageFromCameraHeight = croppedImageFromCameraResult.imageHeight;
+
+        if (croppedImageFromSelect != null && croppedImageFromCamera != null) {
+          // final mergedImage = await compute(
+          //     _mergeImage,
+          //     MergeImageParam(croppedImageFromSelect, croppedImageFromCamera, _currentPickImageWidgetPosition)
+          // );
+          final mergedImage = await _mergeImage(
+              MergeImageParam(croppedImageFromSelect,
+                  croppedImageFromCamera,
+                  _currentPickImageWidgetPosition,
+                  croppedImageFromSelectWidth,
+                  croppedImageFromSelectHeight,
+                  croppedImageFromCameraWidth,
+                  croppedImageFromCameraHeight
+              )
+          );
           if (mergedImage != null) {
             final currentUnix = DateTime.now().microsecondsSinceEpoch;
             final croppedFileName = "{$currentUnix}_cropped.png";
@@ -504,7 +530,7 @@ class _CameraScreenState extends State<CameraScreen>
                           final editedImage = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ImageEditor(
+                              builder: (context) => imp.ImageEditor(
                                 image: mergedImage,
                               ),
                             ),
@@ -545,54 +571,95 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   static _mergeImage(MergeImageParam param) async {
-    final imageFromCamera = image.decodeImage(param.imageFromCamera);
-    final imageFromSelected = image.decodeImage(param.imageFromSelect);
-    if (imageFromCamera != null && imageFromSelected != null) {
-      switch (param.currentPickImageWidgetPosition) {
-        case PickImageWidgetPosition.left:
-          final mergedImage = image.Image(imageFromCamera.width * 2, imageFromCamera.height);
-          image.copyInto(mergedImage, imageFromSelected, blend: false);
-          image.copyInto(
-              mergedImage,
-              imageFromCamera,
-              dstX: imageFromSelected.width,
-              blend: false
-          );
-          return image.encodePng(mergedImage);
+    final imageFromCameraWidth = param.imageFromCameraWidth;
+    final imageFromCameraHeight = param.imageFromCameraHeight;
+    final imageFromSelectWidth = param.imageFromSelectWidth;
+    final imageFromSelectHeight = param.imageFromSelectHeight;
 
-        case PickImageWidgetPosition.right:
-          final mergedImage = image.Image(imageFromCamera.width * 2, imageFromCamera.height);
-          image.copyInto(mergedImage, imageFromCamera, blend: false);
-          image.copyInto(
-              mergedImage,
-              imageFromSelected,
-              dstX: imageFromCamera.width,
-              blend: false
-          );
-          return image.encodePng(mergedImage);
+    switch (param.currentPickImageWidgetPosition) {
+      case PickImageWidgetPosition.left:
+        final imageMergeOption = ImageMergeOption(
+          canvasSize: Size(imageFromCameraWidth * 2, imageFromCameraHeight.toDouble()),
+          format: const OutputFormat.png()
+        )
+        ..addImage(MergeImageConfig(
+            image: MemoryImageSource(param.imageFromSelect),
+            position: ImagePosition(
+                const Offset(0, 0),
+                Size(imageFromSelectWidth.toDouble(), imageFromSelectHeight.toDouble())
+            )
+        ))
+        ..addImage(MergeImageConfig(
+            image: MemoryImageSource(param.imageFromCamera),
+            position: ImagePosition(
+              Offset(imageFromSelectWidth.toDouble(), 0),
+              Size(imageFromCameraWidth.toDouble(), imageFromCameraHeight.toDouble())
+            )
+        ));
+        return ImageMerger.mergeToMemory(option: imageMergeOption);
 
-        case PickImageWidgetPosition.top:
-          final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height * 2);
-          image.copyInto(mergedImage, imageFromSelected, blend: false);
-          image.copyInto(
-              mergedImage,
-              imageFromCamera,
-              dstY: imageFromSelected.height,
-              blend: false
-          );
-          return image.encodePng(mergedImage);
+      case PickImageWidgetPosition.right:
+        final imageMergeOption = ImageMergeOption(
+            canvasSize: Size(imageFromCameraWidth * 2, imageFromCameraHeight.toDouble()),
+            format: const OutputFormat.png()
+        )
+        ..addImage(MergeImageConfig(
+            image: MemoryImageSource(param.imageFromCamera),
+            position: ImagePosition(
+                const Offset(0, 0),
+                Size(imageFromCameraWidth.toDouble(), imageFromCameraHeight.toDouble())
+            )
+        ))
+        ..addImage(MergeImageConfig(
+            image: MemoryImageSource(param.imageFromSelect),
+            position: ImagePosition(
+                Offset(imageFromCameraWidth.toDouble(), 0),
+                Size(imageFromSelectWidth.toDouble(), imageFromSelectHeight.toDouble())
+            )
+        ));
+        return ImageMerger.mergeToMemory(option: imageMergeOption);
 
-        case PickImageWidgetPosition.bottom:
-          final mergedImage = image.Image(imageFromCamera.width, imageFromCamera.height * 2);
-          image.copyInto(mergedImage, imageFromCamera, blend: false);
-          image.copyInto(
-              mergedImage,
-              imageFromSelected,
-              dstY: imageFromCamera.height,
-              blend: false
-          );
-          return image.encodePng(mergedImage);
-      }
+      case PickImageWidgetPosition.top:
+        final imageMergeOption = ImageMergeOption(
+            canvasSize: Size(imageFromCameraWidth.toDouble(), imageFromCameraHeight.toDouble() * 2),
+            format: const OutputFormat.png()
+        )
+        ..addImage(MergeImageConfig(
+            image: MemoryImageSource(param.imageFromSelect),
+            position: ImagePosition(
+                const Offset(0, 0),
+                Size(imageFromSelectWidth.toDouble(), imageFromSelectHeight.toDouble())
+            )
+        ))
+        ..addImage(MergeImageConfig(
+            image: MemoryImageSource(param.imageFromCamera),
+            position: ImagePosition(
+                Offset(0, imageFromSelectHeight.toDouble()),
+                Size(imageFromCameraWidth.toDouble(), imageFromCameraHeight.toDouble())
+            )
+        ));
+        return ImageMerger.mergeToMemory(option: imageMergeOption);
+
+      case PickImageWidgetPosition.bottom:
+        final imageMergeOption = ImageMergeOption(
+            canvasSize: Size(imageFromCameraWidth.toDouble(), imageFromCameraHeight.toDouble() * 2),
+            format: const OutputFormat.png()
+        )
+        ..addImage(MergeImageConfig(
+            image: MemoryImageSource(param.imageFromCamera),
+            position: ImagePosition(
+                const Offset(0, 0),
+                Size(imageFromCameraWidth.toDouble(), imageFromCameraHeight.toDouble())
+            )
+        ))
+        ..addImage(MergeImageConfig(
+            image: MemoryImageSource(param.imageFromSelect),
+            position: ImagePosition(
+                Offset(0, imageFromCameraHeight.toDouble()),
+                Size(imageFromSelectWidth.toDouble(), imageFromSelectHeight.toDouble())
+            )
+        ));
+        return ImageMerger.mergeToMemory(option: imageMergeOption);
     }
   }
 
@@ -1092,7 +1159,7 @@ class _CameraScreenState extends State<CameraScreen>
                 child: InkWell(
                   child: const Icon(Icons.add_a_photo, color: Colors.white,),
                   onTap: () async {
-                    XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    XFile? file = await ip.ImagePicker().pickImage(source: ip.ImageSource.gallery);
                     setState(() {
                       if (file == null) {
                         _selectedFile = null;
@@ -1132,7 +1199,7 @@ class _CameraScreenState extends State<CameraScreen>
           ),
           onPressed: () async {
             if (_hasSelectedPicture && !_hasTakenPicture) {
-              XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
+              XFile? file = await ip.ImagePicker().pickImage(source: ip.ImageSource.gallery);
               setState(() {
                 if (file == null) {
                   _selectedFile = null;

@@ -13,6 +13,14 @@ enum CropPosition {
   bottomHalf,
 }
 
+class CropResult {
+  const CropResult(this.result, this.imageWidth, this.imageHeight);
+
+  final Uint8List? result;
+  final int imageWidth;
+  final int imageHeight;
+}
+
 class ImageCropper extends StatefulWidget {
   const ImageCropper({
     Key? key,
@@ -31,7 +39,7 @@ class ImageCropper extends StatefulWidget {
 
   /// 裁剪框中的图片并将其转成png格式输出，表示为 [Uint8List]
   /// 裁剪部件需要用其key引用
-  static Future<Uint8List?> crop({
+  static Future<CropResult> crop({
     required GlobalKey cropperKey,
     double pixelRatio = 3,
     CropPosition cropPosition = CropPosition.full
@@ -44,7 +52,7 @@ class ImageCropper extends StatefulWidget {
     final byteData = await image.toByteData(
       format: ImageByteFormat.png,
     );
-    final pngBytes = byteData?.buffer.asUint8List();
+    final Uint8List? pngBytes = byteData?.buffer.asUint8List();
 
     if (pngBytes != null) {
       switch (cropPosition) {
@@ -52,37 +60,35 @@ class ImageCropper extends StatefulWidget {
           final editorOption = ImageEditorOption()
             ..addOption(ClipOption(x: 0, y: 0, width: image.width, height: image.height))
             ..outputFormat = const OutputFormat.png();
-          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
+          return CropResult(await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption), image.width, image.height);
 
         case CropPosition.leftHalf:
           final editorOption = ImageEditorOption()
             ..addOption(ClipOption(x: 0, y: 0, width: image.width / 2, height: image.height))
             ..outputFormat = const OutputFormat.png();
-          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
+          return CropResult(await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption), image.width ~/ 2, image.height);
 
         case CropPosition.rightHalf:
           final editorOption = ImageEditorOption()
             ..addOption(ClipOption(x: image.width / 2, y: 0, width: image.width / 2, height: image.height))
             ..outputFormat = const OutputFormat.png();
-          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
+          return CropResult(await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption), image.width ~/ 2, image.height);
 
         case CropPosition.topHalf:
           final editorOption = ImageEditorOption()
             ..addOption(ClipOption(x: 0, y: 0, width: image.width, height: image.height / 2))
             ..outputFormat = const OutputFormat.png();
-          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
+          return CropResult(await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption), image.width, image.height ~/ 2);
 
         case CropPosition.bottomHalf:
           final editorOption = ImageEditorOption()
             ..addOption(ClipOption(x: 0, y: image.height / 2, width: image.width, height: image.height / 2))
             ..outputFormat = const OutputFormat.png();
-          return await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption);
-
-        default: return pngBytes;
+          return CropResult(await ImageEditor.editImage(image: pngBytes, imageEditorOption: editorOption), image.width, image.height ~/ 2);
       }
     }
 
-    return pngBytes;
+    return CropResult(pngBytes, image.width, image.height);
   }
 }
 
