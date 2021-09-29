@@ -19,8 +19,8 @@ extension Localization on String {
         "zh_cn": "关于",
       } +
       {
-        "en_us": "Built with love and courage.",
-        "zh_cn": "以爱与勇气之名。",
+        "en_us": "Even mountains and ocean cannot stop us falling in love.",
+        "zh_cn": "所爱隔山海，山海皆可平。",
       };
 
   String get i18n => localize(this, _t);

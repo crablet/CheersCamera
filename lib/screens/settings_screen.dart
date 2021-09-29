@@ -77,7 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             template: TemplateCamera
                         ).show(
                           title: "Cheers Camera",
-                          content: "Built with love and courage.".i18n,
+                          content: "Even mountains and ocean cannot stop us falling in love.".i18n,
                         );
                       }
                   ),
