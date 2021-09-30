@@ -94,7 +94,7 @@ class _CameraScreenState extends State<CameraScreen>
   double _baseScale = 1.0;
   double _currentZoomLevel = 1.0;
   double _currentExposureOffset = 0.0;
-  double _currentPreviewMaskOpacity = 0.0;
+  double _currentPreviewMaskOpacity = 0.253;
   FlashMode _currentFlashMode = FlashMode.auto;
 
   List<File> allFileList = [];
