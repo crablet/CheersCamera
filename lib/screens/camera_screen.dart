@@ -221,6 +221,8 @@ class _CameraScreenState extends State<CameraScreen>
             children: [
               _buildCameraPreviewWidget(),
               _buildSelectPictureWidget(),
+              if (!_hasTakenPicture)
+                _buildCameraControlPad(),
               if (_hasTakenPicture && _imageFile != null)
                 _buildCropCameraImageWidget(),
               if (App.showAssistiveGridWidget)
@@ -1066,11 +1068,19 @@ class _CameraScreenState extends State<CameraScreen>
     if (cameraController == null || !cameraController.value.isInitialized) {
       return _buildLoadedCamera();
     } else {
-      return Listener(
-        onPointerDown: (_) => ++_pointers,
-        onPointerUp: (_) => --_pointers,
-        child: CameraPreview(
-          controller!,
+      return CameraPreview(controller!);
+    }
+  }
+
+  Widget _buildCameraControlPad() {
+    return SizedBox.expand(
+      child: FractionallySizedBox(
+        alignment: _positionEnumToCropCameraImageAlignment(_currentPickImageWidgetPosition),
+        widthFactor: _positionEnumToCropCameraImageWidthFactor(_currentPickImageWidgetPosition),
+        heightFactor: _positionEnumToCropCameraImageHeightFactor(_currentPickImageWidgetPosition),
+        child: Listener(
+          onPointerDown: (_) => ++_pointers,
+          onPointerUp: (_) => --_pointers,
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               return GestureDetector(
@@ -1097,8 +1107,8 @@ class _CameraScreenState extends State<CameraScreen>
             },
           ),
         ),
-      );
-    }
+      ),
+    );
   }
   
   Widget _buildPreviewMaskWidget() {
