@@ -175,9 +175,10 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void initState() {
+    super.initState();
     // 初始化相机
     onNewCameraSelected(cameras.first);
-    super.initState();
+    WidgetsBinding.instance?.addObserver(this);
   }
 
   @override
@@ -197,6 +198,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
     controller?.dispose();
     super.dispose();
   }
