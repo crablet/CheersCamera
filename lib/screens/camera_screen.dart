@@ -1074,39 +1074,61 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildCameraControlPad() {
     return SizedBox.expand(
-      child: FractionallySizedBox(
-        alignment: _positionEnumToCropCameraImageAlignment(_currentPickImageWidgetPosition),
-        widthFactor: _positionEnumToCropCameraImageWidthFactor(_currentPickImageWidgetPosition),
-        heightFactor: _positionEnumToCropCameraImageHeightFactor(_currentPickImageWidgetPosition),
-        child: Listener(
-          onPointerDown: (_) => ++_pointers,
-          onPointerUp: (_) => --_pointers,
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onScaleStart: _handleScaleStart,
-                onScaleUpdate: _handleScaleUpdate,
-                onTapUp: (event) {
-                  // 手指松开后开始展示聚焦框
-                  setState(() {
-                    _showAutofocusFrame = true;
-                    _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
-                    _autofocusFrameY = event.localPosition.dy - 53;
-                  });
+      child: DragTarget<PickImageWidgetPosition>(
+        builder: (context, candidateData, rejectedData) {
+          return FractionallySizedBox(
+            alignment: _positionEnumToCropCameraImageAlignment(_currentPickImageWidgetPosition),
+            widthFactor: _positionEnumToCropCameraImageWidthFactor(_currentPickImageWidgetPosition),
+            heightFactor: _positionEnumToCropCameraImageHeightFactor(_currentPickImageWidgetPosition),
+            child: Listener(
+              onPointerDown: (_) => ++_pointers,
+              onPointerUp: (_) => --_pointers,
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onScaleStart: _handleScaleStart,
+                    onScaleUpdate: _handleScaleUpdate,
+                    onTapUp: (event) {
+                      // 手指松开后开始展示聚焦框
+                      setState(() {
+                        _showAutofocusFrame = true;
+                        _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
+                        _autofocusFrameY = event.localPosition.dy - 53;
+                      });
 
-                  // 松开一段时间后结束展示聚焦框
-                  Timer(const Duration(milliseconds: 530), () {
-                    setState(() {
-                      _showAutofocusFrame = false;
-                    });
-                  });
+                      // 松开一段时间后结束展示聚焦框
+                      Timer(const Duration(milliseconds: 530), () {
+                        setState(() {
+                          _showAutofocusFrame = false;
+                        });
+                      });
+                    },
+                    onTapDown: (details) => onViewFinderTap(details, constraints),
+                  );
                 },
-                onTapDown: (details) => onViewFinderTap(details, constraints),
-              );
-            },
-          ),
-        ),
+              ),
+            ),
+          );
+        },
+        onAccept: (data) {
+          setState(() {
+            switch (_currentPickImageWidgetPosition) {
+              case PickImageWidgetPosition.left:
+                _currentPickImageWidgetPosition = PickImageWidgetPosition.right;
+                break;
+              case PickImageWidgetPosition.right:
+                _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
+                break;
+              case PickImageWidgetPosition.top:
+                _currentPickImageWidgetPosition = PickImageWidgetPosition.bottom;
+                break;
+              case PickImageWidgetPosition.bottom:
+                _currentPickImageWidgetPosition = PickImageWidgetPosition.top;
+                break;
+            }
+          });
+        },
       ),
     );
   }
