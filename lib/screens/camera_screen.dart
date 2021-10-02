@@ -17,7 +17,6 @@ import 'package:image_editor/image_editor.dart';
 import 'package:image_editor_plus/image_editor_plus.dart' as imp;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart' as ip;
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../globals.dart';
 import '../i18n/camera_screen.i18n.dart';
@@ -1029,9 +1028,9 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildLoadingCamera() {
     return Center(
-      child: LoadingAnimationWidget.threeRotatingDots(
-          color: Colors.white,
-          size: 53
+      child: Padding(
+        padding: const EdgeInsets.all(53),
+        child: Image.asset("assets/cheers_splash.png"),
       ),
     );
   }
