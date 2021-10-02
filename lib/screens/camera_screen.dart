@@ -1094,9 +1094,31 @@ class _CameraScreenState extends State<CameraScreen>
                     onTapUp: (event) {
                       // 手指松开后开始展示聚焦框
                       setState(() {
-                        _showAutofocusFrame = true;
-                        _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
-                        _autofocusFrameY = event.localPosition.dy - 53;
+                        switch (_currentPickImageWidgetPosition) {
+                          case PickImageWidgetPosition.left:
+                            _showAutofocusFrame = true;
+                            _autofocusFrameX = event.localPosition.dx - 53 + constraints.maxWidth; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
+                            _autofocusFrameY = event.localPosition.dy - 53;
+                            break;
+
+                          case PickImageWidgetPosition.right:
+                            _showAutofocusFrame = true;
+                            _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
+                            _autofocusFrameY = event.localPosition.dy - 53;
+                            break;
+
+                          case PickImageWidgetPosition.top:
+                            _showAutofocusFrame = true;
+                            _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
+                            _autofocusFrameY = event.localPosition.dy - 53 + constraints.maxHeight;
+                            break;
+
+                          case PickImageWidgetPosition.bottom:
+                            _showAutofocusFrame = true;
+                            _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
+                            _autofocusFrameY = event.localPosition.dy - 53;
+                            break;
+                        }
                       });
 
                       // 松开一段时间后结束展示聚焦框
