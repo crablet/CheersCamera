@@ -1040,11 +1040,44 @@ class _CameraScreenState extends State<CameraScreen>
       return;
     }
 
+    Offset offset;
+    switch (_currentPickImageWidgetPosition) {
+      case PickImageWidgetPosition.left:
+        offset = Offset(
+          (details.localPosition.dx + constraints.maxWidth) / (constraints.maxWidth * 2),
+          details.localPosition.dy / constraints.maxHeight,
+        );
+        break;
+
+      case PickImageWidgetPosition.right:
+        offset = Offset(
+          details.localPosition.dx / (constraints.maxWidth * 2),
+          details.localPosition.dy / constraints.maxHeight,
+        );
+        break;
+
+      case PickImageWidgetPosition.top:
+        offset = Offset(
+          details.localPosition.dx / (constraints.maxWidth * 2),
+          (details.localPosition.dy  + constraints.maxHeight) / (constraints.maxHeight * 2),
+        );
+        break;
+
+      case PickImageWidgetPosition.bottom:
+        offset = Offset(
+          details.localPosition.dx / (constraints.maxWidth * 2),
+          details.localPosition.dy / (constraints.maxHeight * 2),
+        );
+        break;
+
+      default:
+        offset = Offset(
+          details.localPosition.dx / constraints.maxWidth,
+          details.localPosition.dy / constraints.maxHeight,
+        );
+    }
+
     final CameraController cameraController = controller!;
-    final offset = Offset(
-      details.localPosition.dx / constraints.maxWidth,
-      details.localPosition.dy / constraints.maxHeight,
-    );
     cameraController.setExposurePoint(offset);
     cameraController.setFocusPoint(offset);
   }
