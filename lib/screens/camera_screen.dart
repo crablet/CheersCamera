@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
@@ -59,10 +60,10 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen>
   with WidgetsBindingObserver {
 
-  final GlobalKey _cropperKeyForSelectPictureWidget =
+  final GlobalKey<ic.ImageCropperState> _cropperKeyForSelectPictureWidget =
     GlobalKey(debugLabel: "cropperKeyForSelectPictureWidget");
 
-  final GlobalKey _cropperKeyForTakePictureWidget =
+  final GlobalKey<ic.ImageCropperState> _cropperKeyForTakePictureWidget =
     GlobalKey(debugLabel: "cropperKeyForTakePictureWidget");
 
   CameraController? controller;
@@ -79,11 +80,14 @@ class _CameraScreenState extends State<CameraScreen>
   double _maxAvailableExposureOffset = 0.0;
   double _minAvailableZoom = 1.0;
   double _maxAvailableZoom = 1.0;
+  final double _minPickImageRotation = -pi;
+  final double _maxPickImageRotation = pi;
 
   bool _showFlashChoiceWidget = false;
   bool _showChangeExposureWidget = false;
   bool _showSelectPickImagePositionWidget = false;
   bool _showPreviewMaskOpacityWidget = false;
+  bool _showPickImageRotationWidget = false;
 
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
@@ -95,6 +99,7 @@ class _CameraScreenState extends State<CameraScreen>
   double _currentExposureOffset = 0.0;
   double _currentPreviewMaskOpacity = 0.253;
   FlashMode _currentFlashMode = FlashMode.auto;
+  double _currentPickImageWidgetRotation = 0; // [-pi, pi]
 
   List<File> allFileList = [];
 
@@ -298,6 +303,7 @@ class _CameraScreenState extends State<CameraScreen>
              _showChangeExposureWidget ? _buildChangeExposureWidget() :
              _showSelectPickImagePositionWidget ? _buildSelectPickImagePositionWidget() :
              _showPreviewMaskOpacityWidget ? _buildChangePreviewMaskOpacityWidget() :
+             _showPickImageRotationWidget ? _buildChangePickImageRotationWidget():
              Container()
     );
   }
@@ -325,6 +331,8 @@ class _CameraScreenState extends State<CameraScreen>
                       _showFlashChoiceWidget = !_showFlashChoiceWidget;
                       _showChangeExposureWidget = false;
                       _showSelectPickImagePositionWidget = false;
+                      _showPreviewMaskOpacityWidget = false;
+                      _showPickImageRotationWidget = false;
                     });
                   },
                 ),
@@ -342,6 +350,7 @@ class _CameraScreenState extends State<CameraScreen>
                       _showChangeExposureWidget = false;
                       _showFlashChoiceWidget = false;
                       _showPreviewMaskOpacityWidget = false;
+                      _showPickImageRotationWidget = false;
                     });
                   },
                 ),
@@ -353,6 +362,7 @@ class _CameraScreenState extends State<CameraScreen>
                       _showFlashChoiceWidget = false;
                       _showSelectPickImagePositionWidget = false;
                       _showPreviewMaskOpacityWidget = false;
+                      _showPickImageRotationWidget = false;
                     });
                   },
                 ),
@@ -361,6 +371,19 @@ class _CameraScreenState extends State<CameraScreen>
                   onTap: () {
                     setState(() {
                       _showPreviewMaskOpacityWidget = !_showPreviewMaskOpacityWidget;
+                      _showChangeExposureWidget = false;
+                      _showFlashChoiceWidget = false;
+                      _showSelectPickImagePositionWidget = false;
+                      _showPickImageRotationWidget = false;
+                    });
+                  },
+                ),
+                InkWell(
+                  child: const Icon(Icons.loop, color: Colors.grey),
+                  onTap: () {
+                    setState(() {
+                      _showPickImageRotationWidget = !_showPickImageRotationWidget;
+                      _showPreviewMaskOpacityWidget = false;
                       _showChangeExposureWidget = false;
                       _showFlashChoiceWidget = false;
                       _showSelectPickImagePositionWidget = false;
@@ -729,6 +752,60 @@ class _CameraScreenState extends State<CameraScreen>
           await controller!.setZoomLevel(value);
         },
       )
+    );
+  }
+
+  Widget _buildChangePickImageRotationWidget() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                _buildChangeCurrentPickImageRotationWidget(),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChangeCurrentPickImageRotationWidget() {
+    return Expanded(
+        child: SizedBox(
+          width: 30,
+          child: Slider(
+            value: _currentPickImageWidgetRotation,
+            min: _minPickImageRotation,
+            max: _maxPickImageRotation,
+            onChanged: (value) {
+              setState(() {
+                // 只有选择了照片之后旋转选照片的框才是有意义的
+                if (_hasSelectedPicture) {
+                  var matrix =  _cropperKeyForSelectPictureWidget
+                      .currentState
+                      ?.transformationController
+                      .value.clone();
+                  if (matrix != null) {
+                    matrix
+                      ..translate(999.9, 999.9)
+                      ..rotateZ(value - _currentPickImageWidgetRotation)  // 旋转的角度是较上次旋转的差值，因为每次rotateZ都是较上一帧的位置旋转的
+                      ..translate(-999.9, -999.9);
+                    _cropperKeyForSelectPictureWidget
+                        .currentState
+                        ?.transformationController
+                        .value = matrix;
+                    _currentPickImageWidgetRotation = value;
+                  }
+                }
+              });
+            },
+          ),
+        )
     );
   }
 
@@ -1206,7 +1283,8 @@ class _CameraScreenState extends State<CameraScreen>
         builder: (context, candidateData, rejectedData) {
           return LongPressDraggable<PickImageWidgetPosition>(
             child: ic.ImageCropper(
-              cropperKey: _cropperKeyForSelectPictureWidget,
+              boundaryMargin: const EdgeInsets.all(999.9),
+              key: _cropperKeyForSelectPictureWidget,
               image: Image.file(_selectedFile!),
             ),
             feedback: _buildThumbnailOfImage(_selectedFile!),
@@ -1319,7 +1397,7 @@ class _CameraScreenState extends State<CameraScreen>
           builder: (context, candidateData, rejectedData) {
             return LongPressDraggable<PickImageWidgetPosition>(
               child: ic.ImageCropper(
-                cropperKey: _cropperKeyForTakePictureWidget,
+                key: _cropperKeyForTakePictureWidget,
                 image: Image.file(_imageFile!),
               ),
               feedback: _buildThumbnailOfImage(_imageFile!),

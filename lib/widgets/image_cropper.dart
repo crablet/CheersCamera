@@ -24,18 +24,17 @@ class CropResult {
 class ImageCropper extends StatefulWidget {
   const ImageCropper({
     Key? key,
-    required this.cropperKey,
+    this.boundaryMargin = EdgeInsets.zero,
     required this.image,
   }) : super(key: key);
 
   // 准备被裁剪的图像
   final Image image;
 
-  // 使用crop要用到的key
-  final GlobalKey? cropperKey;
+  final EdgeInsets boundaryMargin;
 
   @override
-  _ImageCropperState createState() => _ImageCropperState();
+  ImageCropperState createState() => ImageCropperState();
 
   /// 裁剪框中的图片并将其转成png格式输出，表示为 [Uint8List]
   /// 裁剪部件需要用其key引用
@@ -92,8 +91,8 @@ class ImageCropper extends StatefulWidget {
   }
 }
 
-class _ImageCropperState extends State<ImageCropper> {
-  late TransformationController _transformationController;
+class ImageCropperState extends State<ImageCropper> {
+  late TransformationController transformationController;
 
   // 为了避免不必要的刷新，用该变量表示状态变化后新旧widget是否改变了待裁剪的图像
   late bool _hasImageUpdate;
@@ -120,7 +119,7 @@ class _ImageCropperState extends State<ImageCropper> {
   void initState() {
     super.initState();
     _hasImageUpdate = true;
-    _transformationController = TransformationController();
+    transformationController = TransformationController();
   }
 
   @override
@@ -132,11 +131,11 @@ class _ImageCropperState extends State<ImageCropper> {
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
-        key: widget.cropperKey,
         child: LayoutBuilder(
           builder: (_, constraint) {
             return InteractiveViewer(
-              transformationController: _transformationController,
+              boundaryMargin: widget.boundaryMargin,
+              transformationController: transformationController,
               constrained: false,
               minScale: 0.053,
               child: Builder(
@@ -173,7 +172,7 @@ class _ImageCropperState extends State<ImageCropper> {
       final renderBox = context.findRenderObject() as RenderBox?;
       final childSize = renderBox?.size ?? Size.zero;
       if (childSize != Size.zero) {
-        _transformationController.value = Matrix4.identity() * _getCoverRatio(parentSize, childSize);
+        transformationController.value = Matrix4.identity() * _getCoverRatio(parentSize, childSize);
       }
 
       _shouldSetInitialScale = false;
@@ -182,7 +181,7 @@ class _ImageCropperState extends State<ImageCropper> {
 
   @override
   void dispose() {
-    _transformationController.dispose();
+    transformationController.dispose();
     super.dispose();
   }
 }
