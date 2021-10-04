@@ -461,10 +461,14 @@ class _CameraScreenState extends State<CameraScreen>
 
           XFile? rawImage = await _takePicture();
           _imageFile = File(rawImage!.path);
-          String fileFormat = _imageFile!.path.split('.').last;
-          final currentUnix = DateTime.now().microsecondsSinceEpoch;
-          final fileName = "$currentUnix.$fileFormat";  // 目前暂定为"时间戳.后缀"的命名，后续会改
-          await ImageGallerySaver.saveFile(_imageFile!.path, name: fileName); // 保存到相册中
+
+          // 只有开启了"保存原图"功能有才会在相册中保存用户拍摄的图片，否则只保存拼接后的图，默认开启该功能
+          if (App.saveOriginalImage) {
+            String fileFormat = _imageFile!.path.split('.').last;
+            final currentUnix = DateTime.now().microsecondsSinceEpoch;
+            final fileName = "$currentUnix.$fileFormat";  // 目前暂定为"时间戳.后缀"的命名，后续会改
+            await ImageGallerySaver.saveFile(_imageFile!.path, name: fileName); // 保存到相册中
+          }
 
           setState(() {
             _hasTakenPicture = true;

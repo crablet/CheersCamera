@@ -56,6 +56,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                     secondary: const Icon(Icons.border_horizontal),
+                  ),
+                  Divider(
+                    color: Colors.grey[300],
+                  ),
+                  SwitchListTile(
+                    title: Text("Save Original Image".i18n),
+                    value: App.saveOriginalImage,
+                    onChanged: (bool value) {
+                      setState(() {
+                        App.saveOriginalImage = value;
+                      });
+                    },
+                    secondary: const Icon(Icons.border_horizontal),
                   )
                 ],
               ),

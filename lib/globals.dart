@@ -37,4 +37,7 @@ class App {
 
   static bool get showAssistiveGridWidget => sp.getBool("showAssistiveGridWidget") ?? false;
   static set showAssistiveGridWidget(bool show) => sp.setBool("showAssistiveGridWidget", show);
+
+  static bool get saveOriginalImage => sp.getBool("saveOriginalImage") ?? true;
+  static set saveOriginalImage(bool isSave) => sp.setBool("saveOriginalImage", isSave);
 }

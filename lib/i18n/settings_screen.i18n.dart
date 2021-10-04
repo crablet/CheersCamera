@@ -15,6 +15,10 @@ extension Localization on String {
         "zh_cn": "水平仪",
       } +
       {
+        "en_us": "Save Original Image",
+        "zh_cn": "保存原图",
+      } +
+      {
         "en_us": "About",
         "zh_cn": "关于",
       } +
