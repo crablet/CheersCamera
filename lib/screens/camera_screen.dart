@@ -1291,7 +1291,7 @@ class _CameraScreenState extends State<CameraScreen>
         builder: (context, candidateData, rejectedData) {
           return LongPressDraggable<PickImageWidgetPosition>(
             child: ic.ImageCropper(
-              boundaryMargin: const EdgeInsets.all(999.9),
+              boundaryMargin: _currentPickImageWidgetRotation != 0 ? const EdgeInsets.all(999.9) : EdgeInsets.zero,
               key: _cropperKeyForSelectPictureWidget,
               image: Image.file(_selectedFile!),
             ),
@@ -1378,9 +1378,11 @@ class _CameraScreenState extends State<CameraScreen>
                 if (file == null) {
                   _selectedFile = null;
                   _hasSelectedPicture = false;
+                  _currentPickImageWidgetRotation = 0.0;
                 } else {
                   _selectedFile = File(file.path);
                   _hasSelectedPicture = true;
+                  _currentPickImageWidgetRotation = 0.0;
                 }
               });
             } else if (_hasSelectedPicture && _hasTakenPicture) {
