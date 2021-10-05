@@ -68,7 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         App.saveOriginalImage = value;
                       });
                     },
-                    secondary: const Icon(Icons.border_horizontal),
+                    secondary: const Icon(Icons.save),
                   )
                 ],
               ),
