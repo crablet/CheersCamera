@@ -82,6 +82,7 @@ class _CameraScreenState extends State<CameraScreen>
   double _maxAvailableZoom = 1.0;
   final double _minPickImageRotation = -pi;
   final double _maxPickImageRotation = pi;
+  bool _isSwitchingCamera = false;
 
   bool _showFlashChoiceWidget = false;
   bool _showChangeExposureWidget = false;
@@ -168,6 +169,7 @@ class _CameraScreenState extends State<CameraScreen>
     if (mounted) {
       setState(() {
         _isCameraInitialized = controller!.value.isInitialized;
+        _isSwitchingCamera = false;
       });
     }
   }
@@ -213,7 +215,8 @@ class _CameraScreenState extends State<CameraScreen>
         child: Scaffold(
           body: _isCameraInitialized
             ? _buildLoadedCamera()
-            : _buildLoadingCamera(),
+            : _isSwitchingCamera ? _buildSwitchingCamera()
+                                 : _buildLoadingCamera(),
         )
     );
   }
@@ -701,6 +704,7 @@ class _CameraScreenState extends State<CameraScreen>
     return InkWell(
       onTap: () {
         setState(() {
+          _isSwitchingCamera = true;
           _isCameraInitialized = false;
         });
         onNewCameraSelected(cameras[_isRearCameraSelected ? 1 : 0]);
@@ -1116,6 +1120,18 @@ class _CameraScreenState extends State<CameraScreen>
       child: Padding(
         padding: const EdgeInsets.all(53),
         child: Image.asset("assets/cheers_splash.png"),
+      ),
+    );
+  }
+
+  Widget _buildSwitchingCamera() {
+    return Container(
+      color: const Color(0xFF080404),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(53),
+          child: Image.asset("assets/cheers_splash_black.png"),
+        ),
       ),
     );
   }

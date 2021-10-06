@@ -85,6 +85,7 @@ flutter:
 
   assets:
     - assets/cheers_splash.png
+    - assets/cheers_splash_black.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
