@@ -161,7 +161,7 @@ class _CameraScreenState extends State<CameraScreen>
         cameraController.getMinZoomLevel().then((value) => _minAvailableZoom = value)
       ]);
 
-      _currentFlashMode = controller!.value.flashMode;
+      controller!.setFlashMode(_currentFlashMode);
     } on CameraException catch (e) {
       debugPrint("Error initializing camera: $e");
     }
