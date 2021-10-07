@@ -10,9 +10,7 @@ class AFFramePainter extends CustomPainter {
       ..color = Colors.white
       ..strokeWidth = 2 * 0.53;
 
-    RRect rRect = RRect.fromRectAndRadius(rect, const Radius.circular(5.3));
-    canvas.drawRRect(rRect, paint);
-    canvas.drawCircle(Offset(rect.width / 2, rect.height / 2), 2 * 5.3, paint);
+    canvas.drawCircle(Offset(rect.width / 2, rect.height / 2), rect.width / 2, paint);
   }
 
   @override

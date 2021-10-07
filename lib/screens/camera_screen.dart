@@ -102,6 +102,8 @@ class _CameraScreenState extends State<CameraScreen>
   FlashMode _currentFlashMode = FlashMode.auto;
   double _currentPickImageWidgetRotation = 0; // [-pi, pi]
 
+  static const double _afFrameRadius = 53;
+
   List<File> allFileList = [];
 
   PickImageWidgetPosition _currentPickImageWidgetPosition = PickImageWidgetPosition.left;
@@ -285,7 +287,7 @@ class _CameraScreenState extends State<CameraScreen>
           opacity: _showAutofocusFrame ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 530),
           child: CustomPaint(
-            size: const Size.square(2 * 53),
+            size: const Size.square(_afFrameRadius),
             painter: AFFramePainter(),
           )
         ),
@@ -1235,26 +1237,26 @@ class _CameraScreenState extends State<CameraScreen>
                         switch (_currentPickImageWidgetPosition) {
                           case PickImageWidgetPosition.left:
                             _showAutofocusFrame = true;
-                            _autofocusFrameX = event.localPosition.dx - 53 + constraints.maxWidth; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
-                            _autofocusFrameY = event.localPosition.dy - 53;
+                            _autofocusFrameX = event.localPosition.dx - _afFrameRadius / 2 + constraints.maxWidth; // 为了让中心对准按压地点，所以偏移减个一半框的大小
+                            _autofocusFrameY = event.localPosition.dy - _afFrameRadius / 2;
                             break;
 
                           case PickImageWidgetPosition.right:
                             _showAutofocusFrame = true;
-                            _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
-                            _autofocusFrameY = event.localPosition.dy - 53;
+                            _autofocusFrameX = event.localPosition.dx - _afFrameRadius / 2; // 为了让中心对准按压地点，所以偏移减个一半框的大小
+                            _autofocusFrameY = event.localPosition.dy - _afFrameRadius / 2;
                             break;
 
                           case PickImageWidgetPosition.top:
                             _showAutofocusFrame = true;
-                            _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
-                            _autofocusFrameY = event.localPosition.dy - 53 + constraints.maxHeight;
+                            _autofocusFrameX = event.localPosition.dx - _afFrameRadius / 2; // 为了让中心对准按压地点，所以偏移减个一半框的大小
+                            _autofocusFrameY = event.localPosition.dy - _afFrameRadius / 2 + constraints.maxHeight;
                             break;
 
                           case PickImageWidgetPosition.bottom:
                             _showAutofocusFrame = true;
-                            _autofocusFrameX = event.localPosition.dx - 53; // 因为框大小是2 * 53，为了让中心对准按压地点，所以偏移减个一半框的大小
-                            _autofocusFrameY = event.localPosition.dy - 53;
+                            _autofocusFrameX = event.localPosition.dx - _afFrameRadius / 2; // 为了让中心对准按压地点，所以偏移减个一半框的大小
+                            _autofocusFrameY = event.localPosition.dy - _afFrameRadius / 2;
                             break;
                         }
                       });
