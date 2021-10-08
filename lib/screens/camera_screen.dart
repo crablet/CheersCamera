@@ -231,6 +231,8 @@ class _CameraScreenState extends State<CameraScreen>
           child: Stack(
             children: [
               _buildCameraPreviewWidget(),
+              if (_hasSelectedPicture && _hasTakenPicture)
+                _buildBlackBackground(),
               _buildSelectPictureWidget(),
               if (!_hasTakenPicture)
                 _buildCameraControlPad(),
@@ -1123,6 +1125,14 @@ class _CameraScreenState extends State<CameraScreen>
           child: Image.asset("assets/cheers_splash_black.png"),
         ),
       ),
+    );
+  }
+
+  Widget _buildBlackBackground() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Colors.black,
     );
   }
 
