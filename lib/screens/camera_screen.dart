@@ -251,8 +251,7 @@ class _CameraScreenState extends State<CameraScreen>
                   children: [
                     Row(
                       children: [
-                        _buildShowZoomLevelWidget(),
-                        _buildChangeZoomLevelWidget(),
+                        _buildChangeZoomLevelWidget()
                       ],
                     ),
                     Row(
@@ -732,30 +731,13 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
-  Widget _buildShowZoomLevelWidget() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            _currentZoomLevel.toStringAsFixed(1) + 'x',
-            style: const TextStyle(color: Colors.white),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildChangeZoomLevelWidget() {
     return Expanded(
       child: SliderTheme(
         data: SliderTheme.of(context).copyWith(
           trackHeight: 0.53,
+          showValueIndicator: ShowValueIndicator.always,
+          valueIndicatorColor: Colors.white,
         ),
         child: Slider(
           value: _currentZoomLevel,
@@ -763,6 +745,7 @@ class _CameraScreenState extends State<CameraScreen>
           max: _maxAvailableZoom,
           activeColor: Colors.white,
           inactiveColor: Colors.white30,
+          label: _currentZoomLevel.toStringAsFixed(1) + 'x',
           onChanged: (value) async {
             setState(() {
               _currentZoomLevel = value;
