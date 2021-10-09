@@ -1118,13 +1118,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildSwitchingCamera() {
     return Container(
-      color: const Color(0xFF080404),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(53),
-          child: Image.asset("assets/cheers_splash_black.png"),
-        ),
-      ),
+      color: Colors.black
     );
   }
 
