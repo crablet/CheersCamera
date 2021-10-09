@@ -1306,10 +1306,17 @@ class _CameraScreenState extends State<CameraScreen>
       child: DragTarget<PickImageWidgetPosition>(
         builder: (context, candidateData, rejectedData) {
           return LongPressDraggable<PickImageWidgetPosition>(
-            child: ic.ImageCropper(
-              boundaryMargin: _currentPickImageWidgetRotation != 0 ? const EdgeInsets.all(999.9) : EdgeInsets.zero,
-              key: _cropperKeyForSelectPictureWidget,
-              image: Image.file(_selectedFile!),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return ic.ImageCropper(
+                  boundaryMargin: _currentPickImageWidgetRotation != 0
+                      ? const EdgeInsets.all(999.9)
+                      : _positionEnumToPreviewMaskBoundaryMargin(_currentPickImageWidgetPosition,
+                                                                 Size(constraints.maxWidth, constraints.maxHeight)),
+                  key: _cropperKeyForSelectPictureWidget,
+                  image: Image.file(_selectedFile!),
+                );
+              }
             ),
             feedback: _buildThumbnailOfImage(_selectedFile!),
             data: _currentPickImageWidgetPosition,
@@ -1531,6 +1538,15 @@ class _CameraScreenState extends State<CameraScreen>
       case PickImageWidgetPosition.right: return ic.CropPosition.rightHalf;
       case PickImageWidgetPosition.top: return ic.CropPosition.topHalf;
       case PickImageWidgetPosition.bottom: return ic.CropPosition.bottomHalf;
+    }
+  }
+
+  EdgeInsets _positionEnumToPreviewMaskBoundaryMargin(PickImageWidgetPosition position, Size size) {
+    switch (position) {
+      case PickImageWidgetPosition.left: return EdgeInsets.only(right: size.width / 2);
+      case PickImageWidgetPosition.right: return EdgeInsets.only(left: size.width / 2);
+      case PickImageWidgetPosition.top: return EdgeInsets.only(bottom: size.height / 2);
+      case PickImageWidgetPosition.bottom: return EdgeInsets.only(top: size.height / 2);
     }
   }
 }
