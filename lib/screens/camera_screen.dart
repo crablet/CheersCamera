@@ -735,26 +735,29 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildChangeZoomLevelWidget() {
     return Expanded(
-      child: SliderTheme(
-        data: SliderTheme.of(context).copyWith(
-          trackHeight: 0.53,
-          showValueIndicator: ShowValueIndicator.always,
-          valueIndicatorColor: Colors.white,
+      child: Container(
+        margin: const EdgeInsets.only(left: 53, right: 53),
+        child: SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            trackHeight: 0.53,
+            showValueIndicator: ShowValueIndicator.always,
+            valueIndicatorColor: Colors.white,
+          ),
+          child: Slider(
+            value: _currentZoomLevel,
+            min: _minAvailableZoom,
+            max: _maxAvailableZoom,
+            activeColor: Colors.white,
+            inactiveColor: Colors.white30,
+            label: _currentZoomLevel.toStringAsFixed(1) + 'x',
+            onChanged: (value) async {
+              setState(() {
+                _currentZoomLevel = value;
+              });
+              await controller!.setZoomLevel(value);
+            },
+          )
         ),
-        child: Slider(
-          value: _currentZoomLevel,
-          min: _minAvailableZoom,
-          max: _maxAvailableZoom,
-          activeColor: Colors.white,
-          inactiveColor: Colors.white30,
-          label: _currentZoomLevel.toStringAsFixed(1) + 'x',
-          onChanged: (value) async {
-            setState(() {
-              _currentZoomLevel = value;
-            });
-            await controller!.setZoomLevel(value);
-          },
-        )
       )
     );
   }
