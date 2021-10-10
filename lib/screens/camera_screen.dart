@@ -89,6 +89,7 @@ class _CameraScreenState extends State<CameraScreen>
   bool _showSelectPickImagePositionWidget = false;
   bool _showPreviewMaskOpacityWidget = false;
   bool _showPickImageRotationWidget = false;
+  bool _showZoomValueWidget = false;
 
   // 当前屏幕上有多少手指正在触摸（触点个数），用于处理缩放
   int _pointers = 0;
@@ -244,6 +245,8 @@ class _CameraScreenState extends State<CameraScreen>
                 const SpiritLevel(),
               if (_hasSelectedPicture)
                 _buildReselectImageWidget(),
+              if (_showZoomValueWidget && !(_hasSelectedPicture && _hasSelectedPicture))
+                _buildZoomValueWidget(),
               _buildAFFrameWidget(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
@@ -740,8 +743,6 @@ class _CameraScreenState extends State<CameraScreen>
         child: SliderTheme(
           data: SliderTheme.of(context).copyWith(
             trackHeight: 0.53,
-            showValueIndicator: ShowValueIndicator.always,
-            valueIndicatorColor: Colors.white,
           ),
           child: Slider(
             value: _currentZoomLevel,
@@ -749,12 +750,17 @@ class _CameraScreenState extends State<CameraScreen>
             max: _maxAvailableZoom,
             activeColor: Colors.white,
             inactiveColor: Colors.white30,
-            label: _currentZoomLevel.toStringAsFixed(1) + 'x',
             onChanged: (value) async {
               setState(() {
                 _currentZoomLevel = value;
+                _showZoomValueWidget = true;
               });
               await controller!.setZoomLevel(value);
+            },
+            onChangeEnd: (value) {
+              setState(() {
+                _showZoomValueWidget = false;
+              });
             },
           )
         ),
@@ -1191,7 +1197,9 @@ class _CameraScreenState extends State<CameraScreen>
     }
 
     _currentZoomLevel = (_baseScale * details.scale).clamp(_minAvailableZoom, _maxAvailableZoom);
-    setState(() {});
+    setState(() {
+      _showZoomValueWidget = true;
+    });
     await controller!.setZoomLevel(_currentZoomLevel);
   }
 
@@ -1221,6 +1229,11 @@ class _CameraScreenState extends State<CameraScreen>
                     behavior: HitTestBehavior.opaque,
                     onScaleStart: _handleScaleStart,
                     onScaleUpdate: _handleScaleUpdate,
+                    onScaleEnd: (detail) {
+                      setState(() {
+                        _showZoomValueWidget = false;
+                      });
+                    },
                     onTapUp: (event) {
                       // 手指松开后开始展示聚焦框
                       setState(() {
@@ -1377,6 +1390,20 @@ class _CameraScreenState extends State<CameraScreen>
       child: Image.file(
         file,
         scale: 2 * 5.3,
+      ),
+    );
+  }
+
+  Widget _buildZoomValueWidget() {
+    return IgnorePointer(
+      child: Center(
+        child: Text(
+          _currentZoomLevel.toStringAsFixed(1) + 'x',
+          style: const TextStyle(
+            fontSize: 53,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
