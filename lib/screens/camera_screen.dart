@@ -256,7 +256,8 @@ class _CameraScreenState extends State<CameraScreen>
                   children: [
                     Row(
                       children: [
-                        _buildChangeZoomLevelWidget()
+                        if (!(_hasSelectedPicture && _hasTakenPicture))
+                          _buildChangeZoomLevelWidget(),
                       ],
                     ),
                     Row(
