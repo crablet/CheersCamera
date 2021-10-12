@@ -19,9 +19,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return I18n(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text("Settings".i18n),
-          centerTitle: true,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(45),
+          child: AppBar(
+            title: Text(
+              "Settings".i18n,
+              style: const TextStyle(
+                fontSize: 18
+              ),
+            ),
+            centerTitle: true,
+            elevation: 2.53,
+          ),
         ),
         backgroundColor: Colors.grey[100],
         body: ListView(
