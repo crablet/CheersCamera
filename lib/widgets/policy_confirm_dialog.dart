@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../i18n/policy_confirm_dialog.i18n.dart';
+
 class PolicyConfirmDialog extends Dialog {
   const PolicyConfirmDialog({Key? key}) : super(key: key);
 
@@ -14,11 +16,11 @@ class PolicyConfirmDialog extends Dialog {
             ),
             child: Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 5.3 * 4, bottom: 5.3 * 4),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.3 * 4, bottom: 5.3 * 4),
                   child: Text(
-                    "欢迎使用Cheers Camera",
-                    style: TextStyle(
+                    title.i18n,
+                    style: const TextStyle(
                       fontSize: 5.3 * 2.9,
                       fontWeight: FontWeight.bold
                     ),
