@@ -8,6 +8,7 @@ import 'package:cheers_camera/painters/af_frame_painter.dart';
 import 'package:cheers_camera/painters/assistive_grid_painter.dart';
 import 'package:cheers_camera/screens/settings_screen.dart';
 import 'package:cheers_camera/widgets/image_cropper.dart' as ic;
+import 'package:cheers_camera/widgets/policy_confirm_dialog.dart';
 import 'package:cheers_camera/widgets/spirit_level.dart';
 import 'package:flutter/material.dart';
 
@@ -1118,6 +1119,10 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Widget _buildLoadingCamera() {
+    // Timer(const Duration(milliseconds: 53), () {
+    //   showDialog(context: context, builder: (_) => PolicyConfirmDialog());
+    // });
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(53),
