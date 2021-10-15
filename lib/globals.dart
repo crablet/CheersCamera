@@ -40,4 +40,9 @@ class App {
 
   static bool get saveOriginalImage => sp.getBool("saveOriginalImage") ?? true;
   static set saveOriginalImage(bool isSave) => sp.setBool("saveOriginalImage", isSave);
+
+  static bool get policyAgreement => sp.getBool("policyAgreement") ?? false;
+  static set policyAgreement(bool hasAgreed) => sp.setBool("policyAgreement", hasAgreed);
+
+  static bool policyConfirmDialogIsShowing = false;
 }

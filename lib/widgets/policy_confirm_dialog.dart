@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../i18n/policy_confirm_dialog.i18n.dart';
+import 'package:cheers_camera/globals.dart';
 
 class PolicyConfirmDialog extends Dialog {
   const PolicyConfirmDialog({Key? key}) : super(key: key);
@@ -81,7 +84,7 @@ class PolicyConfirmDialog extends Dialog {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => exit(0),
                         child: const Text(
                           "不同意",
                           style: TextStyle(
@@ -99,7 +102,11 @@ class PolicyConfirmDialog extends Dialog {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          App.policyAgreement = true;
+
+                          Navigator.of(context).pop();
+                        },
                         child: const Text(
                           "同意",
                           style: TextStyle(

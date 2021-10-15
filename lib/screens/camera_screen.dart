@@ -1119,9 +1119,12 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Widget _buildLoadingCamera() {
-    // Timer(const Duration(milliseconds: 53), () {
-    //   showDialog(context: context, builder: (_) => PolicyConfirmDialog());
-    // });
+    Timer(const Duration(milliseconds: 53), () {
+      if (!App.policyAgreement && !App.policyConfirmDialogIsShowing) {
+        App.policyConfirmDialogIsShowing = true;
+        showDialog(context: context, builder: (_) => const PolicyConfirmDialog());
+      }
+    });
 
     return Center(
       child: Padding(
