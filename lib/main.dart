@@ -19,10 +19,14 @@ late final Directory directory;
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    cameras = await availableCameras();
-    directory = await getApplicationDocumentsDirectory();
 
     await App.init();
+
+    if (App.policyAgreement) {
+      cameras = await availableCameras();
+    }
+
+    directory = await getApplicationDocumentsDirectory();
 
     EasyLoading.instance.maskType = EasyLoadingMaskType.black;
 

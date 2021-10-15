@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 import '../i18n/policy_confirm_dialog.i18n.dart';
+import 'package:cheers_camera/main.dart';
 import 'package:cheers_camera/globals.dart';
 
 class PolicyConfirmDialog extends Dialog {
@@ -102,10 +104,10 @@ class PolicyConfirmDialog extends Dialog {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           App.policyAgreement = true;
-
-                          Navigator.of(context).pop();
+                          cameras = await availableCameras();
+                          Navigator.of(context).pop(true);
                         },
                         child: const Text(
                           "同意",

@@ -84,6 +84,7 @@ class _CameraScreenState extends State<CameraScreen>
   final double _minPickImageRotation = -pi;
   final double _maxPickImageRotation = pi;
   bool _isSwitchingCamera = false;
+  bool _shouldShowCamera = App.policyAgreement;
 
   bool _showFlashChoiceWidget = false;
   bool _showChangeExposureWidget = false;
@@ -186,9 +187,11 @@ class _CameraScreenState extends State<CameraScreen>
   @override
   void initState() {
     super.initState();
-    // 初始化相机
-    onNewCameraSelected(cameras.first);
-    WidgetsBinding.instance?.addObserver(this);
+    if (App.policyAgreement) {
+      // 初始化相机
+      onNewCameraSelected(cameras.first);
+      WidgetsBinding.instance?.addObserver(this);
+    }
   }
 
   @override
@@ -217,7 +220,7 @@ class _CameraScreenState extends State<CameraScreen>
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          body: _isCameraInitialized
+          body: _isCameraInitialized && _shouldShowCamera
             ? _buildLoadedCamera()
             : _isSwitchingCamera ? _buildSwitchingCamera()
                                  : _buildLoadingCamera(),
@@ -1119,10 +1122,12 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Widget _buildLoadingCamera() {
-    Timer(const Duration(milliseconds: 53), () {
+    Timer(const Duration(milliseconds: 53), () async {
       if (!App.policyAgreement && !App.policyConfirmDialogIsShowing) {
         App.policyConfirmDialogIsShowing = true;
-        showDialog(context: context, builder: (_) => const PolicyConfirmDialog());
+        _shouldShowCamera = await showDialog(context: context, builder: (_) => const PolicyConfirmDialog());
+        _isCameraInitialized = true;
+        setState(() {});
       }
     });
 
