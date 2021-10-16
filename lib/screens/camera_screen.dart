@@ -1127,6 +1127,7 @@ class _CameraScreenState extends State<CameraScreen>
         App.policyConfirmDialogIsShowing = true;
         _shouldShowCamera = await showDialog(context: context, builder: (_) => const PolicyConfirmDialog());
         _isCameraInitialized = true;
+        onNewCameraSelected(cameras.first);
         setState(() {});
       }
     });
