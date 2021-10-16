@@ -16,7 +16,6 @@ import 'package:cheers_camera/main.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_editor/image_editor.dart';
-import 'package:image_editor_plus/image_editor_plus.dart' as imp;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart' as ip;
 
@@ -558,39 +557,7 @@ class _CameraScreenState extends State<CameraScreen>
                 builder: (context) {
                   return AlertDialog(
                     title: Text("Image Saved".i18n),
-                    content: Text("Further edit?".i18n),
                     backgroundColor: const Color(0xffffecb3),
-                    actions: [
-                      TextButton(
-                        child: Text("cancel".i18n),
-                        style: TextButton.styleFrom(
-                          primary: Colors.black,
-                        ),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                      TextButton(
-                        child: Text("edit".i18n),
-                        style: TextButton.styleFrom(
-                          primary: Colors.black,
-                        ),
-                        onPressed: () async {
-                          Navigator.of(context).pop();
-                          final editedImage = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => imp.ImageEditor(
-                                image: mergedImage,
-                              ),
-                            ),
-                          );
-                          await ImageGallerySaver.saveImage(
-                              editedImage,
-                              quality: 100,
-                              name: "new_{$croppedFileName}"
-                          );
-                        },
-                      ),
-                    ],
                   );
                 }
             );

@@ -42,7 +42,6 @@ dependencies:
   shared_preferences:
   flutter_beautiful_popup:
   fluttertoast:
-  image_editor_plus:
   i18n_extension:
   image_editor:
 
