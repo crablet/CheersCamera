@@ -552,14 +552,89 @@ class _CameraScreenState extends State<CameraScreen>
                 name: "new_{$croppedFileName}"
             );
 
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text("Image Saved".i18n),
-                    backgroundColor: const Color(0xffffecb3),
-                  );
-                }
+            // 合成图片后展示保存成功提示框
+            showModalBottomSheet(
+              context: context,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(5.3 * 2 * 2)
+                )
+              ),
+              builder: (BuildContext context) {
+                return FractionallySizedBox(
+                  heightFactor: 0.53,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xffffecb3),
+                          Color(0xffffffff),
+                        ]
+                      ),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(5.3 * 2 * 2)
+                      )
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "🎉",
+                              style: TextStyle(
+                                fontSize: 53 / 2
+                              ),
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  "保存成功！",
+                                  style: TextStyle(
+                                    fontSize: 53 / 3,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                SizedBox(height: 5.3 / 2),
+                                Text(
+                                  "可前往相册页查看",
+                                  style: TextStyle(
+                                    fontSize: 53 / 5,
+                                    color: Colors.grey
+                                  )
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 5.3 * 2 * 2),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            "完成",
+                            style:
+                            TextStyle(
+                              fontSize: 5.3 * 2.9,
+                              fontWeight: FontWeight.bold
+                            )
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(53 * 5.3, 5.3 * 9.99),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(5.3 * 2)),
+                            )
+                          ),
+                        )
+                      ],
+                    )
+                  ),
+                );
+              }
             );
           }
         }
