@@ -529,10 +529,6 @@ class _CameraScreenState extends State<CameraScreen>
         final croppedImageFromCameraHeight = croppedImageFromCameraResult.imageHeight;
 
         if (croppedImageFromSelect != null && croppedImageFromCamera != null) {
-          // final mergedImage = await compute(
-          //     _mergeImage,
-          //     MergeImageParam(croppedImageFromSelect, croppedImageFromCamera, _currentPickImageWidgetPosition)
-          // );
           final mergedImage = await _mergeImage(
               MergeImageParam(croppedImageFromSelect,
                   croppedImageFromCamera,
@@ -591,19 +587,19 @@ class _CameraScreenState extends State<CameraScreen>
                             ),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
-                              children: const [
+                              children: [
                                 Text(
-                                  "保存成功！",
-                                  style: TextStyle(
+                                  "Image Saved".i18n,
+                                  style: const TextStyle(
                                     fontSize: 53 / 3,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold
                                   ),
                                 ),
-                                SizedBox(height: 5.3 / 2),
+                                const SizedBox(height: 5.3 / 2),
                                 Text(
-                                  "可前往相册页查看",
-                                  style: TextStyle(
+                                  "You can view in the gallery.".i18n,
+                                  style: const TextStyle(
                                     fontSize: 53 / 5,
                                     color: Colors.grey
                                   )
@@ -615,10 +611,10 @@ class _CameraScreenState extends State<CameraScreen>
                         const SizedBox(height: 5.3 * 2 * 2),
                         ElevatedButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            "完成",
+                          child: Text(
+                            "Done".i18n,
                             style:
-                            TextStyle(
+                            const TextStyle(
                               fontSize: 5.3 * 2.9,
                               fontWeight: FontWeight.bold
                             )
